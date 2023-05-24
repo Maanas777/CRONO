@@ -1,0 +1,118 @@
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+<!-- https://fonts.google.com/specimen/Roboto -->
+<link rel="stylesheet" href="/asset_2/css/fontawesome.min.css">
+<!-- https://fontawesome.com/ -->
+<link rel="stylesheet" href="/asset_2/css/bootstrap.min.css">
+<!-- https://getbootstrap.com/ -->
+<link rel="stylesheet" href="/asset_2/css/templatemo-style.css">
+<!--
+Product Admin CSS Template
+https://templatemo.com/tm-524-product-admin
+-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<div class="container tm-mt-big tm-mb-big">
+    <div class="row">
+      <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+        <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+          <div class="row">
+            <div class="col-12">
+              <h1 class="tm-block-title d-inline-block">Update product</h1>
+            </div>
+          </div>
+          <div class="row tm-edit-product-row">
+            <div class="col-xl-6 col-lg-6 col-md-12">
+
+              <form action="/update_product/ <%=user._id %>" method="POST" enctype="multipart/form-data"  class="tm-edit-product-form">
+                <div class="form-group mb-3">
+                  <label
+                    for="name"
+                    >Product Name
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value="<%= user.name %>"
+                    class="form-control validate"
+                    required
+                  />
+                </div>
+                
+                <div class="form-group mb-3">
+                  <label
+                    >Details</label>
+                    <input
+                    id="details"
+                    name="details"
+                    type="text"
+                    value="<%= user.details %>"
+                    class="form-control validate"
+                    required
+                  />
+                </div>
+
+
+                <div class="form-group mb-3">
+                  <label  
+                    for="category"
+                    >Brand</label
+                  >
+                 
+                  <select name="brand">
+                    <% category.forEach(function(product) { %>
+                      <option value="<%= product.category %>" <% if (product.category === user.brand) { %>
+                        selected
+                      <% } %>>
+                        <%= product.category %>
+                      </option>
+                    <% }); %>
+                  </select>
+                </div>
+
+
+
+               
+                <div class="form-group mb-3">
+                  <label
+                    for="price"
+                    >Price
+                  </label>
+                  <input
+                    id="int"
+                    name="price"
+                    type="text"
+                    value="<%= user.price %>"
+                    class="form-control validate"
+                    required
+                  />
+                </div>
+                
+            </div>
+            
+            <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
+              <div class="form-group mt-3">
+                <label for="image">Photo file:</label>
+                <input type="file" class="form-control-file" id="photo" name="photo">
+                <img src="/<%= user.photo %>" width="100" class="img-thumbnail mt-3" alt="">
+    </div>
+         
+           
+      
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary btn-block text-uppercase">Edit Product</button>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="tm-footer row tm-mt-small">
+      <div class="col-12 font-weight-light">
+        
+      </div>
+  </footer> 

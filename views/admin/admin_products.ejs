@@ -1,0 +1,217 @@
+<%- include ('../partials/admin_header')%>
+  <%- include ('../admin/nav', { currentPage: 'products' }) %>
+
+
+
+    <div class="row tm-content-row m-2 mt-5">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
+        <div class="tm-bg-primary tm-block tm-block-products">
+          <!-- Search Bar -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="tm-product-search">
+              <form class="tm-search-form" action="/search_product" method="post">
+                <div class="input-group">
+                  <input type="text" name="search" class="form-control tm-search-input"
+                    placeholder="Search products...">
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary tm-search-btn ">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <a href="/admin_products" class="btn btn-primary mt-10">Show All Products</a>
+          </div>
+
+
+
+          <div class="tm-product-table-container mt-5">
+            <table class="table table-hover tm-table-small tm-product-table">
+              <thead>
+                <tr>
+                  <th scope="col">Serial</th>
+                  <th scope="col">Product Name</th>
+                  <th scope="col">Details</th>
+                  <th scope="col">Brand</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Image</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% product_data.forEach(function(product, index) { %>
+                  <tr>
+                    <td>
+                      <%= index + 1 %>
+                    </td>
+                    <td>
+                      <%= product.name %>
+                    </td>
+                    <td>
+                      <%= product.details %>
+                    </td>
+                    <td>
+                      <%= product.brand %>
+                    </td>
+                    <td>
+                      <%= product.price %>
+                    </td>
+                    <td>
+                      <img class="img-thumbnail" width="100px" src="<%= product.photo[0] %>" />
+                    </td>
+                    <td>
+                      <a href="/edit_pdt/<%= product._id %>" class="btn border-shadow update">
+                        <span class="text-gradient"><i class="fas fa-pencil-alt text-white"></i></span>
+                      </a>
+
+                      <% if (product.Blocked) { %>
+                        <a href="/unblock_product/<%= product._id %>"
+                          class="btn btn-success btn-sm border-shadow update" onclick="confirmUnblock(event)">
+                          <i class="fa fa-lock" aria-hidden="true"></i> Unblock
+                        </a>
+                        <% } else { %>
+                          <a href="/block_pdt/<%= product._id %>" class="btn btn-danger btn-sm border-shadow update"
+                            onclick="confirmBlock(event)">
+                            <i class="fa fa-lock" aria-hidden="true"></i> Block
+                          </a>
+                          <% } %>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <!-- table container -->
+          <a href="/add_products" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
+
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 tm-block-col">
+        <div class="tm-bg-primary tm-block tm-block-product-categories">
+          <h2 class="tm-block-title">Product Categories</h2>
+          <div class="tm-product-table-container">
+            <table class="table tm-table-small tm-product-table">
+              <tbody>
+                <% category_find.forEach(function(category,index) { %>
+                  <tr>
+                    <td class="tm-product-name">
+                      <%= index+1 %>
+                    </td>
+                    <td>
+                      <%= category.category %>
+                    </td>
+
+                    <td class="text-center">
+                      <a href="/edit_category/<%= category._id %>" class="btn border-shadow update">
+                        <span class="text-gradient"><i class="fas fa-pencil-alt text-white"></i></span>
+                      </a>
+                      <a href="/delete_category/<%= category._id %>" class="btn border-shadow delete">
+                        <span class="text-gradient"><i class="fas fa-times text-white"></i></span>
+                      </a>
+
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+
+            </table>
+          </div>
+
+          <a href="/add_category" class="btn btn-primary btn-block text-uppercase mb-3">Add new Category</a>
+        </div>
+      </div>
+    </div>
+    <footer class="tm-footer row tm-mt-small">
+      <div class="col-12 font-weight-light">
+        <p class="text-center text-white mb-0 px-4 small">
+        </p>
+      </div>
+    </footer>
+
+
+    <script>
+     function confirmBlock(event) {
+  event.preventDefault(); // Prevent the link from immediately navigating
+
+  swal({
+    title: "Do you really want to block the product?",
+    icon: "warning",
+    buttons: {
+      cancel: "Cancel",
+      confirm: "OK"
+    },
+    // customClass: {
+    //   popup: 'custom-swal-popup',
+    //   title: 'custom-swal-title',
+    //   content: 'custom-swal-content',
+    //   confirmButton: 'custom-swal-confirm',
+    //   cancelButton: 'custom-swal-cancel'
+    // }
+  }).then((confirmed) => {
+    if (confirmed) {
+      window.location.href = event.target.href; // Navigate to the block_pdt URL
+    }
+  });
+}
+
+
+      function confirmUnblock(event) {
+        event.preventDefault()
+        swal({
+          title: "Do you really want to Un-block the product?",
+          icon: "warning",
+          buttons: {
+            cancel: "No",
+            confirm: "Yes"
+          },
+        }).then(function (confirmed) {
+          if (confirmed) {
+            // User clicked "OK" in the SweetAlert dialog
+            window.location.href = event.target.getAttribute("href"); // Navigate to the block_pdt URL
+          }
+        });
+
+      }
+
+    </script>
+
+<!-- 
+<style>
+  .custom-swal-popup {
+    width: 300px; /* Adjust the width as per your preference */
+  }
+
+  .custom-swal-title {
+    font-size: 18px; /* Adjust the font size as per your preference */
+  }
+
+  .custom-swal-content {
+    font-size: 16px; /* Adjust the font size as per your preference */
+  }
+
+  .custom-swal-confirm,
+  .custom-swal-cancel {
+    padding: 8px 16px; /* Adjust the padding as per your preference */
+    font-size: 14px; /* Adjust the font size as per your preference */
+  }
+</style> -->
+
+    
+    <style>
+      .tm-search-input {
+        max-width: 200px;
+        /* Adjust the value as needed */
+
+
+        
+      }
+
+
+
+      
+    </style>
+
+
+    <%- include ('../partials/admin_footer')%>

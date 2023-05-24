@@ -1,0 +1,36 @@
+<%- include ('../partials/admin_header')%>
+<%- include ('../admin/nav', { currentPage: 'add_category' }) %>
+<div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12">
+        <div class="tm-bg-primary-dark tm-block tm-block-h-auto rounded shadow">
+          <div class="row">
+            <div class="col-12 text-center">
+              <h2 class="tm-block-title d-inline-block">Add Category</h2>
+            </div>
+          </div>
+          <div class="row tm-edit-product-row justify-content-center">
+            <div class="col-xl-6 col-lg-6 col-md-12">
+              <form action="/add_category
+              " method="POST"  class="tm-edit-product-form">
+                <div class="form-group mb-3">
+                  <label for="name">Category</label>
+                  <input id="category" name="category" type="text" class="form-control form-control-lg validate" required />
+                </div>
+                <!-- <div class="form-group mb-3">
+                  <label> Description </label>
+                  <input id="details" name="details" type="text" class="form-control form-control-lg validate" required />
+                </div> -->
+                <div class="form-group mb-3">
+                  <button type="submit" class="btn btn-primary btn-block text-uppercase" style="font-size: 14px; padding: 10px 20px;">Add category</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <%- include ('../partials/admin_footer')%>

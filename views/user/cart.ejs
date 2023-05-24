@@ -1,0 +1,292 @@
+<%- include ('../partials/user-Header')%>
+  <%- include ('../partials/user_nav')%>
+
+
+    <section class="page-header">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="content">
+              <h1 class="page-name">Cart</h1>
+              <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li class="active">cart</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <div class="page-wrapper">
+      <div class="cart shopping">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+              <div class="block">
+                <div class="product-list">
+
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th class="">Item Name</th>
+                        <th class="">Item</th>
+                        <th class="">Quantity</th>
+
+                        <th class="">Item Price</th>
+                        <th class="">Total</th>
+
+                        <th class="">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% products.forEach(function(product){%>
+
+                        <tr class="">
+                          <td> <a href="#!">
+                              <%= product.productId.name %>
+                            </a> </td>
+
+                          <td class="">
+                            <div class="product-info">
+                              <img width="80" src="<%= product.productId.photo[0] %>" alt="" />
+
+                            </div>
+                          </td>
+                          <td>
+                            <button class="cart-item-count mr-4" id="decrement_<%= product.productId._id %>"
+                              onclick="decrementQuantity('<%= product.productId._id %>')">-</button>
+
+
+                            <span id="quantity_<%= product.productId._id %>" name="quantity">
+                              <%= product.quantity %>
+                            </span>
+
+
+                            <button class="cart-item-count mr-4" id="increment_<%= product.productId._id %>"
+                              onclick="incrementQuantity('<%= product.productId._id %>')">+</button>
+                          </td>
+
+
+                          <td class="">
+                            ₹&nbsp;<%= product.productId.price %>
+                          </td>
+
+                          <td class="total price">
+
+                            <% var total=product.quantity * product.productId.price; %>
+
+                            <h5 id="product-total-price-<%= product.productId._id %>" class="item-total"  >  
+                              
+                                 <%= total %>
+                              </h5>
+                          </td>
+                          <td>
+                            <a class="product-remove" href="/productRemove/<%=  product.productId._id %>">Remove</a>
+
+                          </td>
+                          
+                        </tr>
+                        <% }) %>
+
+
+                    </tbody>
+                  </table>
+                  <div class="float-end total-container">
+                    <div class="subtotal">
+                      <h5 class="subtotal-heading">SUBTOTAL:</h5>
+                      ₹&nbsp;<span id="subtotal"></span>
+                    </div>
+
+
+
+                  <a href="/add_adress" class="btn btn-main pull-right">Checkout</a>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <style>
+      .total-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subtotal {
+  display: flex;
+  align-items: center;
+}
+
+.subtotal-heading {
+  margin-right: 10px;
+}
+
+#subtotal {
+  font-weight: bold;
+}
+
+    </style>
+
+
+    <footer class="footer section text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="social-media">
+              <li>
+                <a href="https://www.facebook.com/themefisher">
+                  <i class="tf-ion-social-facebook"></i>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.instagram.com/themefisher">
+                  <i class="tf-ion-social-instagram"></i>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.twitter.com/themefisher">
+                  <i class="tf-ion-social-twitter"></i>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.pinterest.com/themefisher/">
+                  <i class="tf-ion-social-pinterest"></i>
+                </a>
+              </li>
+            </ul>
+            <ul class="footer-menu text-uppercase">
+              <li>
+                <a href="contact.html">CONTACT</a>
+              </li>
+              <li>
+                <a href="shop.html">SHOP</a>
+              </li>
+              <li>
+                <a href="pricing.html">Pricing</a>
+              </li>
+              <li>
+                <a href="contact.html">PRIVACY POLICY</a>
+              </li>
+            </ul>
+            <p class="copyright-text">Copyright &copy;2021, Designed &amp; Developed by <a
+                href="https://themefisher.com/">Themefisher</a></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+
+    <script>
+
+
+const setSubtotal=()=>{
+		const itemTotal=document.getElementsByClassName('item-total')
+		let subtotal=0;
+		for (let i = 0; i < itemTotal.length; i++) {
+
+			subtotal+=Number(itemTotal[i].innerHTML)
+		}
+		document.getElementById('subtotal').innerHTML=subtotal;
+
+	}
+	setSubtotal();
+
+
+      function incrementQuantity(cartId) {
+        $.ajax({
+          url: "/increase_product",
+          type: "POST",
+          data: { cartId: cartId },
+          success: function (data) {
+            if (data.success) {
+              $(`#product-total-price-${cartId}`).text(data.total)
+              $(`#quantity_${cartId}`).text(data?.quantity)
+              setSubtotal();
+            }
+            else {
+              console.log('error while updating');
+            }
+
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            // Handle error response here
+            res.send('error')
+          }
+        })
+      }
+
+   
+      function decrementQuantity(cartItemId) {
+
+
+        var currentQuantity = parseInt($(`#quantity_${cartItemId}`).text());
+
+        if (currentQuantity > 1) {
+          $.ajax({
+            url: "/decreaseQuantity",
+            method: "post",
+            data: { cartItemId: cartItemId },
+            success: function (data) {
+              // Handle success response here
+              console.log(data);
+
+              $(`#product-total-price-${cartItemId}`).text(data.total);
+              $(`#quantity_${cartItemId}`).text(data?.quantity);
+              
+              setSubtotal();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              // Handle error response here
+              res.send('error')
+            }
+          });
+        } else {
+          $(`#quantity_${cartItemId}`).text(1);
+        }
+
+      }
+    </script>
+
+
+<!-- 
+    <script>
+
+      function productRemove(productId) {
+        console.log(productId);
+        $.ajax({
+          url: "/productRemove",
+          type: "post",
+          data: { productId: productId },
+          success: function (data) {
+            console.log(data);
+            if (data.status) {
+              console.log(data.message);
+              location.reload();
+            } else {
+              console.log('error');
+            }
+
+          }
+        })
+      }
+
+    </script> -->
+
+
+
+
+
+
+
+
+
+
+    <%- include ('../partials/user-Footer')%>

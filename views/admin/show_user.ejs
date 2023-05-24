@@ -1,0 +1,97 @@
+<%- include ('../partials/admin_header')%>
+<%- include ('../admin/nav', { currentPage: 'accounts' }) %>
+
+
+<div class="row tm-content-row m-2 mt-3">
+  <div class="col-sm-12 col-md-12 col-lg-8 col-xl-12 tm-block-col">
+    <div class="tm-bg-primary tm-block tm-block-products">
+      <div class="tm-product-table-container">
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-6">
+            
+          </div>
+          <div class="col-sm-12 col-md-6">
+           
+          </div>
+        </div>
+        <table class="table table-hover tm-table-small tm-product-table">
+          <thead>
+            <tr>
+              <th scope="col">Serial</th>
+              <th scope="col">Name</th>
+              <th scope="col">Mobile</th>
+              <th scope="col">Email</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% user_data.forEach(function(user,index){ %>
+            <tr>
+              <td><%= index+1 %></td>
+              <td><%= user.name %></td>
+              <td><%= user.phone %></td>
+              <td><%= user.email %></td>
+              <td>
+                <% if (user.isBlocked) { %>
+                  <a href="/unblock_user/<%= user._id %>" class="btn btn-success btn-sm border-shadow update"
+                    onclick="confirmBlockUser(event)">Unblock</a>
+                <% } else { %>
+                  <a href="/block_user/<%= user._id %>" class="btn btn-danger btn-sm border-shadow update" onclick="confirmUnBlockUser(event)">Block</a>
+                <% } %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <!-- table container -->
+    </div>
+  </div>
+</div>
+
+<script>
+ function confirmBlockUser(event) {
+        event.preventDefault(); // Prevent the link from immediately navigating
+        swal({
+          title: "Do you really want to Un-block the person ?",
+          icon: "warning",
+          buttons: {
+            cancel: "No",
+            confirm: "Yes"
+          },
+        }).then(function(confirmed){
+          if(confirmed){
+            window.location.href = event.target.getAttribute("href"); // Navigate to the block_pdt URL
+          }
+        
+        })
+       
+        
+        }
+      
+
+      function confirmUnBlockUser(event) {
+        event.preventDefault(); // Prevent the link from immediately navigating
+        swal({
+          title: "Do you really want to Block the person ?",
+          icon: "warning",
+          buttons: {
+            cancel: "No",
+            confirm: "Yes"
+          },
+        }).then(function(cofirmed){
+          if(cofirmed){
+            window.location.href = event.target.getAttribute("href"); // Navigate to the block_pdt URL
+          }
+        })
+     
+          // User clicked "OK" in the confirmation dialog
+         
+        }
+      
+
+
+</script>
+
+
+<%- include ('../partials/admin_footer')%>

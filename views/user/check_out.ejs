@@ -1,0 +1,277 @@
+<%- include ('../partials/user-Header')%>
+   <%- include ('../partials/user_nav')%>
+
+
+
+      <section class="page-header">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="content">
+                     <h1 class="page-name">Checkout</h1>
+                     <ol class="breadcrumb">
+                        <li><a href="index.html">Home</a></li>
+                        <li class="active">checkout</li>
+                     </ol>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <div class="page-wrapper">
+         <div class="checkout shopping">
+            <div class="container">
+               <div class="row">
+                  <div class="col-md-8">
+                     <div class="block billing-details">
+                        <h4 class="widget-title">Billing Details</h4>
+                        <form class="checkout-form" action="/order/<%= address._id %>" method="post">
+                           <div class="form-group">
+                              <label for="full_name">Full Name</label>
+                              <input type="text" name="name" class="form-control" id="full_name"
+                                 value="<%= address.name %>" placeholder="">
+                           </div>
+                           <div class="form-group">
+                              <label for="user_address">Phone Number</label>
+                              <input type="text" name="phone" class="form-control" id="user_address" placeholder=""
+                                 value="<%= address.phone %>">
+                           </div>
+                           <div class="checkout-country-code clearfix">
+                              <div class="form-group">
+                                 <label for="user_post_code">Zip Code</label>
+                                 <input type="text" name="zip" class="form-control" id="user_post_code"
+                                    value="<%= address.zip %>">
+                              </div>
+                              <div class="form-group">
+                                 <label for="user_city">City</label>
+                                 <input type="text" name="city" class="form-control" id="user_city"
+                                    value="<%= address.city %>">
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <label for="user_country">State</label>
+                              <input type="text" name="state" class="form-control" id="user_country" placeholder=""
+                                 value="<%= address.state %>">
+                           </div>
+
+                           <div class="block">
+                              <h2 class="section-title">Payment Methods</h2>
+                              <div class="payment-method">
+                                 <input class="payment-method-input" type="radio" name="payment" id="credit-card"
+                                    value="Credit Card">
+                                 <label class="payment-method-label" for="credit-card">
+                                    Credit Card
+                                 </label>
+                              </div>
+
+                              <div class="payment-method">
+                                 <input class="payment-method-input" type="radio" name="payment" id="paypal"
+                                    value="PayPal">
+                                 <label class="payment-method-label" for="paypal">
+                                    PayPal
+                                 </label>
+                              </div>
+
+                              <div class="payment-method">
+                                 <input class="payment-method-input" type="radio" name="payment"
+                                    id="cash-on-delivery" value="Cash on Delivery">
+                                 <label class="payment-method-label" for="cash-on-delivery">
+                                    Cash on Delivery
+                                 </label>
+                              </div>
+
+                              <button type="submit" class="btn btn-main mt-20">Place Order</button>
+                           </div>
+                        </form>
+                     </div>
+
+
+                  </div>
+
+                  <div class="col-md-4">
+                     <div class="product-checkout-details">
+                        <div class="block">
+                           <h4 class="widget-title">Order Summary</h4>
+
+
+                           <% cart.products.forEach(function(product) { %>
+                              <div class="media product-card ">
+
+                                 <a class="pull-left" href="product-single.html">
+                                    <img class="media-object" src="/<%= product.productId.photo[0] %>" alt="image" />
+                                 </a>
+                                 <div class="media-body">
+                                    <h4 class="media-heading" style="font-weight: bold;">
+                                       <%= product.productId.name %><a href="product-single.html"></a>
+                                    </h4>
+                                    <p class="price">
+                                       ₹&nbsp; <%= product.productId.price %>
+                                    </p>
+                                    <span>Quantity <%= product.quantity %></span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <td class="total price">
+                                       <% var total=product.quantity * product.productId.price; %>
+                                          <h5 id="product-total-price-<%= product.productId._id %>" class="item-total">
+                                             <%= total %>
+                                          </h5>
+                                    </td>
+                                    <!-- <span class="remove">Remove</span> -->
+                                 </div>
+
+                              </div>
+                              <% }); %>
+                                 <div class="discount-code">
+                                    <p>Have a discount ? <a data-toggle="modal" data-target="#coupon-modal"
+                                          href="#!">enter it here</a></p>
+                                 </div>
+                                 <ul class="summary-prices">
+                                    <li>
+                                       <span>Subtotal:
+                                       </span>
+
+                                       <span class="price" id="subtotal"></span>
+                                    </li>
+                                    <li>
+                                       <span>Shipping:</span>
+                                       <span>Free</span>
+                                    </li>
+                                 </ul>
+                                 <div class="summary-total">
+                                    <span>Total</span>
+                                    <span id="totalprice"></span>
+
+                                 </div>
+
+
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+
+
+
+
+      <footer class="footer section text-center">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <ul class="social-media">
+                     <li>
+                        <a href="https://www.facebook.com/themefisher">
+                           <i class="tf-ion-social-facebook"></i>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="https://www.instagram.com/themefisher">
+                           <i class="tf-ion-social-instagram"></i>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="https://www.twitter.com/themefisher">
+                           <i class="tf-ion-social-twitter"></i>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="https://www.pinterest.com/themefisher/">
+                           <i class="tf-ion-social-pinterest"></i>
+                        </a>
+                     </li>
+                  </ul>
+                  <ul class="footer-menu text-uppercase">
+                     <li>
+                        <a href="contact.html">CONTACT</a>
+                     </li>
+                     <li>
+                        <a href="shop.html">SHOP</a>
+                     </li>
+                     <li>
+                        <a href="pricing.html">Pricing</a>
+                     </li>
+                     <li>
+                        <a href="contact.html">PRIVACY POLICY</a>
+                     </li>
+                  </ul>
+                  <p class="copyright-text">Copyright &copy;2021, Designed &amp; Developed by <a
+                        href="https://themefisher.com/">Themefisher</a></p>
+               </div>
+            </div>
+         </div>
+      </footer>
+      <style>
+         .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+         }
+
+         .payment-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+         }
+
+         .payment-method-input {
+            margin-right: 10px;
+         }
+
+         .payment-method-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+         }
+
+         .payment-method-icon {
+            display: inline-block;
+            width: 30px;
+            /* height: 30px; */
+            line-height: 30px;
+            text-align: center;
+            background-color: #ccc;
+            border-radius: 50%;
+            margin-right: 10px;
+         }
+
+         .btn-main {
+            background-color: #555;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+         }
+      </style>
+
+
+
+      <script>
+
+         const setSubtotal = () => {
+            const itemTotal = document.getElementsByClassName('item-total')
+            let subtotal = 0;
+            for (let i = 0; i < itemTotal.length; i++) {
+
+               subtotal += Number(itemTotal[i].innerHTML)
+            }
+            document.getElementById('subtotal').innerHTML = subtotal;
+            document.getElementById('totalprice').innerHTML = subtotal;
+
+
+
+         }
+         setSubtotal();
+
+
+      </script>
+
+
+
+
+
+
+
+      <%- include ('../partials/user-Footer')%>
