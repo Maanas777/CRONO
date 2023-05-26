@@ -10,15 +10,23 @@ const userRouter=require('./server/routes/user')
 const adminRouter=require('./server/routes/admin')
 const  connection=require('./server/connection/connection')
 const Swal = require('sweetalert2');
+const cors=require('cors')
 
+const paypal=require('paypal-rest-sdk')
 
+require("dotenv").config();
 
 app.set('view engine', 'ejs');
+
+
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 
 
 app.use(express.static(path.join(__dirname,'public')))
 
 app.use(express.static("uploads"));
+app.use(cors())
 
 app.use(session({
     
@@ -29,7 +37,12 @@ app.use(session({
 }))
 
 
-
+paypal.configure({
+  'mode':'sandbox',
+  'client_id':PAYPAL_CLIENT_ID,
+  'client_secret':PAYPAL_CLIENT_SECRET
+  
+})
 
   app.use(bodyparser.urlencoded({extended:false}))
   

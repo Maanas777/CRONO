@@ -379,7 +379,7 @@ exports.order_find= async(req,res)=>{
 }
 
 
-exports.update_status =async(req,res)=>{
+exports. update_status =async(req,res)=>{
 
     try {
         const id = req.params.id

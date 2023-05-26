@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const bcrypt = require('bcryptjs')
-
+const Razorpay = require('razorpay');
 const usersSchema = require('../model/model')
 const productSchema = require('../model/product_model')
 const cartSchema = require('../model/cart_model')
@@ -12,6 +12,7 @@ const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
 const client = require("twilio")(accountSid, authToken);
 
+const paypal=require('paypal-rest-sdk')
 
 
 
@@ -477,17 +478,18 @@ exports.checkout = async (req, res) => {
 //order confirmation
 
 
+let paypalTotal = 0;
 exports.orderConfirmation = async (req, res) => {
   if (req.session.user) {
     try {
       const payment = req.body.payment
-      const name=req.body.name
+      const name = req.body.name
       const user = req.session.user
       const userId = req.session.user?._id
       const id = req.params.id
-      console.log("yyy");
-      console.log(name);
-      console.log("yxy");
+      // console.log("yyy");
+      // console.log(name);
+      // console.log("yxy");
 
 
       const userModel = await usersSchema.findById(userId)
@@ -530,6 +532,8 @@ exports.orderConfirmation = async (req, res) => {
       });
 
       // will continue
+        if(payment=="COD"){
+
       const order = new orderSchema({
         user: userId,
         items: items,
@@ -546,7 +550,64 @@ exports.orderConfirmation = async (req, res) => {
       await cartSchema.deleteOne({ userId: userId });
 
 
-      res.render('user/confirmation', { user, userId, specifiedAddress, cart, payment,data,totalPrice })
+      res.render('user/confirmation', { user, userId, specifiedAddress, cart, payment, data, totalPrice })
+    }
+    
+    
+    else if(payment=="paypal"){
+      
+    
+
+      const order=new orderSchema({
+        user: userId,
+        items: items,
+        total: totalPrice,
+        status: "Pending",
+        payment_method: payment,
+        createdAt: new Date(),
+        address: specifiedAddress,
+
+      })
+      await order.save()
+      
+      cart.products.forEach((element) => {
+        paypalTotal += totalPrice;
+      });
+
+
+     let createPayment = {
+        intent: "sale",
+        payer: { payment_method: "paypal" },
+        redirect_urls: {
+          return_url: "http://localhost:3002/paypal-success",
+          cancel_url: "http://localhost:3002/paypal-err",
+        },
+        transactions: [
+          {
+            amount: {
+              currency: "USD",
+              total: (paypalTotal / 82).toFixed(2), // Divide by 82 to convert to USD
+            },
+            description: "Super User Paypal Payment",
+          },
+        ],
+      };
+
+      paypal.payment.create(createPayment, function (error, payment) {
+        if (error) {
+          throw error;
+        } else {
+          for (let i = 0; i < payment.links.length; i++) {
+            if (payment.links[i].rel === "approval_url") {
+              res.redirect(payment.links[i].href);
+            }
+          }
+        }
+      });
+      await cartSchema.deleteOne({ userId: userId });
+      
+    }
+
 
     } catch (error) {
       console.log(error);
@@ -559,4 +620,45 @@ exports.orderConfirmation = async (req, res) => {
 }
 
 
+exports.paypal_success= async(req,res)=>{
+  const payerId = req.query.PayerID;
+  const paymentId = req.query.paymentId;
+  const user = req.session.user
+      const userId = req.session.user?._id
 
+  console.log(paypalTotal);
+ 
+  
+  
+
+  const execute_payment_json = {
+    "payer_id": payerId,
+    "transactions": [{
+        "amount": {
+          "currency": "USD",
+            "total": paypalTotal
+        }
+    }]
+  };
+  paypal.payment.execute(paymentId, execute_payment_json, function  (error, payment) {
+    //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
+
+    
+
+  if  (error)  {
+      console.log(error.response);
+      throw error;
+  } else  {
+    
+      console.log(JSON.stringify(payment));
+     res.render("user/paypalSuccess",{payment,user, userId,})
+  }
+});
+
+}
+
+
+exports.paypal_err=(req,res)=>{
+  console.log(req.query);
+  res.send("error")
+}
