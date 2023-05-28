@@ -80,4 +80,15 @@ router.get("/admin_order",admincontoller.order_find)
 router.post("/edit_status/:id",admincontoller.update_status)
 
 
+//coupon
+router.get('/coupon_page',admincontoller.coupon_page)
+router.get('/add_coupon_page',admincontoller.add_coupon_page)
+router.post('/add_coupon',admincontoller.add_coupon)
+router.get('/deactivate_coupon/:id',admincontoller.deactivate_coupon)
+router.get('/activate_coupon/:id',admincontoller.activate_coupon)
+router.post('/edit_coupon/:id',admincontoller.edit_coupon)
+
+
+
+
 module.exports=router

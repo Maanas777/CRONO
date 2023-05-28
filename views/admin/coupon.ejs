@@ -1,0 +1,195 @@
+<%- include ('../partials/admin_header')%>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <%- include ('../admin/nav', { currentPage: 'orders' }) %>
+
+
+        <div class="row tm-content-row m-2 mt-3">
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-12 tm-block-col">
+                <div class="tm-bg-primary tm-block tm-block-products">
+                    <div class="tm-product-table-container">
+                        <div class="row mb-3">
+                            <div class="col-sm-12 col-md-6">
+
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+
+                            </div>
+                        </div>
+                        <table class="table table-hover tm-table-small tm-product-table">
+                            <a href="/add_coupon_page">
+                                <button type="button" class="btn btn-success mb-5 ">Add Coupon</button>
+                            </a>
+
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl No</th>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Discount</th>
+                                    <th scope="col">Expiry Date</th>
+                                    <th scope="col">Edit</th>
+                                    <th scope="col">Activate/Deactivate</th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% coupon_data.forEach(function(coupon, index){ %>
+                                    <tr>
+                                        <td>
+                                            <%= index+1 %>
+                                        </td>
+                                        <td>
+                                            <%= coupon.code %>
+                                        </td>
+                                        <td>
+                                            <%= coupon.discount %>
+                                        </td>
+                                        <td>
+                                            <% if (coupon.status == false) { %>
+                                                <span class="text-danger" style="font-weight: bold;">Deactivated</span>
+                                            <% } else { %>
+                                                <%= coupon.date.toLocaleDateString() %>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-primary" data-toggle="modal" data-target="#edit_coupon<%= coupon._id %>">Edit</a>
+                                        </td>
+                                        <td>
+                                            <% if (coupon.status) { %>
+                                                <a href="/deactivate_coupon/<%= coupon._id %>" class="btn btn-danger" onclick="confirmDeactivate(event)">Deactivate</a>
+                                            <% } else { %>
+                                                <a href="/activate_coupon/<%= coupon._id %>" class="btn btn-success" onclick="confirmActivate(event)">Activate</a>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                            
+                            
+                        </table>
+                    </div>
+                    <!-- table container -->
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- Button trigger modal -->
+
+
+
+        <!-- Button trigger modal -->
+
+
+        <!-- Modal -->
+        <% coupon_data.forEach(function(coupon){ %>
+            <div class="modal fade" id="edit_coupon<%= coupon._id %>" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="row tm-edit-product-row">
+                                <div class="col-xl-6 col-lg-6 col-md-12">
+                                    <form action="/edit_coupon/<%= coupon._id %>" method="POST" class="tm-edit-product-form">
+                                        <div class="form-group mb-3 custom-width">
+
+                                            <label for="coupon code" style="color:black">coupon code
+                                            </label>
+                                            <input id="coupon_code" name="coupon_code" value="<%= coupon.code %>"
+                                                type="text" class="form-control validate" required />
+                                        </div>
+                                        <div class="form-group mb-3 custom-width">
+                                            <label style="color:black">Expiry Date</label>
+
+                                            <input id="date" name="date" type="date" value="<%= coupon.date %>"
+                                                class="form-control validate" required />
+                                        </div>
+                                        <div class="form-group mb-3 custom-width">
+                                            <label style="color:black">Discount Amount</label>
+                                            <input id="discount" name="discount" type="text"
+                                                value="<%= coupon.discount %>" class="form-control validate" required />
+                                        </div>
+
+
+                                        <button type="submit" class="btn btn-success center-button">Edit Coupon</button>
+
+
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+
+                <style>
+                    .custom-width {
+                        margin-left: 30px;
+                        width: 400px;
+                        /* Adjust the width value as per your requirements */
+                    }
+
+                    .center-button {
+                        display: block;
+                        margin-left: 150px;
+                        text-align: center;
+                    }
+                </style>
+
+                <!-- Modal -->
+
+                <%- include ('../partials/admin_footer')%>
+
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+                        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+                        crossorigin="anonymous"></script>
+
+
+                    <script>
+                        function confirmActivate(event) {
+                            event.preventDefault();
+                            swal({
+                                title: "Do you really want Activate The Coupon ?",
+                                icon: "warning",
+                                buttons: {
+                                    cancel: "No",
+                                    confirm: "Yes"
+                                }
+                            }).then(function (confirmed) {
+                                if (confirmed) {
+                                    window.location.href = event.target.getAttribute("href");
+                                }
+                            })
+
+
+                        }
+
+
+                        function confirmDeactivate(event) {
+                            event.preventDefault();
+                            swal({
+                                title: "Do you really want Deactivate The Coupon ?",
+                                icon: "warning",
+                                buttons: {
+                                    cancel: "No",
+                                    confirm: "Yes"
+                                }
+                            }).then(function (confirmed) {
+                                if (confirmed) {
+                                    window.location.href = event.target.getAttribute("href");
+                                }
+                            })
+
+
+                        }
+
+
+
+                    </script>

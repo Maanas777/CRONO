@@ -1,5 +1,8 @@
 <%- include ('../partials/admin_header')%>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
@@ -55,10 +58,11 @@
                 <li class="nav-item dropdown <%= currentPage === 'settings' ? 'active' : '' %>">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
-                        Settings
+                        <i class="fas fa-cog"></i>
+                        <span> Settings <i class="fas fa-angle-down"></i> </span>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Profile</a>
+                        <a class="dropdown-item" href="/coupon_page">coupon</a>
                         <a class="dropdown-item" href="#">Billing</a>
                         <a class="dropdown-item" href="#">Customize</a>
                     </div>

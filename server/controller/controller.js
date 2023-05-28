@@ -12,7 +12,8 @@ const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
 const client = require("twilio")(accountSid, authToken);
 
-const paypal=require('paypal-rest-sdk')
+const paypal=require('paypal-rest-sdk');
+// const { default: orders } = require("razorpay/dist/types/orders");
 
 
 
@@ -575,6 +576,7 @@ exports.orderConfirmation = async (req, res) => {
       });
 
 
+
      let createPayment = {
         intent: "sale",
         payer: { payment_method: "paypal" },
@@ -582,7 +584,7 @@ exports.orderConfirmation = async (req, res) => {
           return_url: "http://localhost:3002/paypal-success",
           cancel_url: "http://localhost:3002/paypal-err",
         },
-        transactions: [
+        transactions: [ 
           {
             amount: {
               currency: "USD",
@@ -591,7 +593,7 @@ exports.orderConfirmation = async (req, res) => {
             description: "Super User Paypal Payment",
           },
         ],
-      };
+      }; 
 
       paypal.payment.create(createPayment, function (error, payment) {
         if (error) {
@@ -662,3 +664,39 @@ exports.paypal_err=(req,res)=>{
   console.log(req.query);
   res.send("error")
 }
+
+
+
+
+exports.order_find= async(req,res)=>{
+  let user=req.session.user
+
+  const order=await orderSchema.find().populate('user').populate('items.product').populate('address')
+
+  res.render('user/order',{order,user})
+
+}
+
+
+exports.cancel_product= async(req,res)=>{
+
+  let id=req.params.id
+
+  const cancel_product= await orderSchema.findByIdAndUpdate(id,
+    {
+      status: 'Cancelled'
+    },
+    { new: true }
+    
+    ) 
+    if(cancel_product){
+      res.redirect("/order_page");
+
+    }else {
+      // Product not found
+
+      res.send("error");
+    }
+  } 
+
+

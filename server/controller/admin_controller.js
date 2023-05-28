@@ -1,9 +1,10 @@
 
 const categorySchema = require("../model/add_category");
 const usersSchema = require('../model/model')
-const cartSchema=require('../model/cart_model')
+const cartSchema = require('../model/cart_model')
 const productSchema = require('../model/product_model')
-const orderSchema= require('../model/order')
+const orderSchema = require('../model/order')
+const couponSchema = require('../model/coupon')
 const multer = require('multer');
 
 const fs = require("fs");
@@ -72,6 +73,7 @@ exports.find_product = async (req, res) => {
 
 
 exports.addProduct = async (req, res) => {
+
   try {
     const product = new productSchema({
       name: req.body.name,
@@ -174,7 +176,7 @@ exports.updateproduct = async (req, res) => {
 exports.block_product = async (req, res) => {
   try {
     const id = req.params.id;
-    
+
     const result = await productSchema.findByIdAndUpdate(id, { Blocked: true });
     res.redirect('/admin_products');
   } catch (error) {
@@ -202,20 +204,20 @@ exports.unblock_product = async (req, res) => {
 
 //add category
 
-exports.  addcategory = async (req, res) => {
+exports.addcategory = async (req, res) => {
   try {
     const existingCategory = await categorySchema.findOne({ category: req.body.category });
-  
+
     if (existingCategory) {
       return res.send('<script>alert("Category already exists"); window.location.href = "/admin_products";</script>');
-    }  
-  const user = new categorySchema({
-    category: req.body.category,
-    // description:req.body.description
-  })
-  const data = await user.save();
-  res.redirect('/admin_products')
-}
+    }
+    const user = new categorySchema({
+      category: req.body.category,
+      // description:req.body.description
+    })
+    const data = await user.save();
+    res.redirect('/admin_products')
+  }
   catch (err) {
     console.log(err);
     res.status(500).send({
@@ -361,39 +363,148 @@ exports.search_product = async (req, res) => {
     const regex = new RegExp(search, 'i');
     const product_data = await productSchema.find({ name: regex });
     const category_find = await categorySchema.find().exec();
-    
-  res.render('admin/admin_products',{product_data,category_find})
+
+    res.render('admin/admin_products', { product_data, category_find })
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while searching for products.' });
   }
- 
+
 };
 
-exports.order_find= async(req,res)=>{
-  const order= await orderSchema.find().populate('user').populate('items.product');
+exports.order_find = async (req, res) => {
+  const order = await orderSchema.find().populate('user').populate('items.product');
   console.log("565");
   console.log(order);
   console.log("5(5");
-  res.render('admin/orders',{order})
+  res.render('admin/orders', { order })
 
 }
 
 
-exports. update_status =async(req,res)=>{
+exports.update_status = async (req, res) => {
 
-    try {
-        const id = req.params.id
-        const orderStatus = req.body.status
-        const order = await orderSchema.findByIdAndUpdate(id,{
-          status:orderStatus
-        },{ new: true })
+  try {
+    const id = req.params.id
 
-        console.log(order);
 
-        res.redirect("/admin_order")
+    const order = await orderSchema.findByIdAndUpdate(id, {
+      status: orderStatus
+    }, { new: true })
 
-    } catch (error) {
-        console.log(error);
-        res.status(501).send("Server Error")
+    console.log(order);
+
+    res.redirect("/admin_order")
+
+  } catch (error) {
+    console.log(error);
+    res.status(501).send("Server Error")
+  }
+}
+
+// to get coupon page with data
+exports.coupon_page = async (req, res) => {
+  let user = req.session.user
+  try {
+    const coupon_data = await couponSchema.find()
+
+    res.render('admin/coupon', { user, coupon_data })
+  }
+  catch (error) {
+    console.error(error);
+    res.send({ message: error.message });
+  }
+}
+
+
+
+// get method to add coupon page
+exports.add_coupon_page = (req, res) => {
+
+  res.render('admin/add_coupon')
+}
+
+
+//post method
+exports.add_coupon = async (req, res) => {
+
+  try {
+    const data = await couponSchema({
+      code: req.body.coupon_code,
+      date: req.body.date,
+      discount: req.body.discount,
+
+
+    })
+    const coupon = await data.save()
+
+    res.redirect('add_coupon_page');
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      message: err.message || 'Some error occurred'
+    });
+  }
+
+}
+
+
+//deactivate coupon
+
+exports.deactivate_coupon = async (req, res) => {
+
+  try {
+    const id = req.params.id
+
+    await couponSchema.findByIdAndUpdate(id, {
+      status: false
+    }, { new: true })
+    res.redirect('/coupon_page')
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("failed to Deactivate coupon.");
+  };
+}
+
+
+//activate coupon
+exports.activate_coupon = async (req, res) => {
+  try {
+    const id = req.params.id
+
+    await couponSchema.findByIdAndUpdate(id, {
+      status: true
+    }, { new: true })
+    res.redirect('/coupon_page')
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("failed to Activate coupon.");
+  };
+}
+
+//edit coupon
+exports.edit_coupon = async (req, res) => {
+  try {
+    const id = req.params.id
+    const editedCoupon = await couponSchema.findByIdAndUpdate(id, {
+
+      code: req.body.coupon_code,
+      date: req.body.date,
+      discount: req.body.discount
+
+    }, { new: true })
+
+    if (editedCoupon) {
+
+      res.redirect("/coupon_page");
+
+    } else {
+      res.send(err)
     }
+
+  } catch (error) {
+    console.error(error);
+    res.send(error);
+  }
 }

@@ -1,0 +1,52 @@
+<%- include ('../partials/admin_header')%>
+<%- include ('../admin/nav', { currentPage: 'add_coupon' }) %>
+
+    <div class="container tm-mt-big tm-mb-big">
+        <div class="row">
+            <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+                <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="tm-block-title d-inline-block">Add coupon</h2>
+                        </div>
+                    </div>
+                    <div class="row tm-edit-product-row">
+                        <div class="col-xl-6 col-lg-6 col-md-12">
+
+                            <form action="/add_coupon" method="POST" class="tm-edit-product-form">
+                                <div class="form-group mb-3">
+                                    <label for="coupon code">coupon code
+                                    </label>
+                                    <input id="coupon_code" name="coupon_code" type="text" class="form-control validate"
+                                        required />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Expiry Date</label>
+                                    <input id="date" name="date" type="date" class="form-control validate" required />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Discount Amount</label>
+                                    <input id="discount" name="discount" type="text" class="form-control validate"
+                                        required />
+                                </div>
+
+
+
+
+                                <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
+                                    
+
+                                    <div class="col-16">
+                                        <button type="submit" class="btn btn-primary btn-block text-uppercase" style="padding:10px;">Add
+                                            Coupon Now</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+
+        <%- include ('../partials/admin_footer')%>

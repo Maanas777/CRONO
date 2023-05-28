@@ -55,6 +55,8 @@ router.get('/add_adress',controller.address)
 router.post('/add_address',controller.add_address)
 router.get('/checkout/:id',controller.checkout)
 router.post('/order/:id',controller.orderConfirmation)
+router.get('/order_page',controller.order_find)
+router.get('/cancel_product/:id',controller.cancel_product)
 
 router.get('/paypal-success',controller.paypal_success)
 router.get('/paypal-success',controller.paypal_err)

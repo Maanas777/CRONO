@@ -1,0 +1,151 @@
+<%- include ('../partials/user-Header')%>
+    <%- include ('../partials/user_nav')%>
+
+        <section class="page-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="content">
+                            <h1 class="page-name">Dashboard</h1>
+                            <ol class="breadcrumb">
+                                <li><a href="index.html">Home</a></li>
+                                <li class="active">my account</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="user-dashboard page-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="dashboard-wrapper user-dashboard">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Product name</th>
+                                            <th>Amount</th>
+                                            <th>Adress</th>
+                                            <th>Image</th>
+                                            <th>Payment Method</th>
+                                            <th>Status</th>
+                                            <th>cancel</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.forEach(function(order){ %>
+                                            <tr>
+                                                <td>
+                                                    <%= order.createdAt.toLocaleDateString()  %>
+                                                </td>
+                                                <td>
+                                                    <% order.items.forEach(function(item){ %>
+
+                                                        <%= item.product.name %> <br>
+
+                                                            <% }) %>
+
+                                                </td>
+
+
+                                                <td>
+                                                    <%= order.total %>
+                                                </td>
+
+                                                <td>
+                                                    <%= order.address.name %><br>
+                                                        <%= order.address.phone %><br>
+                                                            <%= order.address.city%><br>
+                                                                <%= order.address.state%>
+                                                </td>
+
+                                                <td>
+                                                    <% order.items.forEach((item,index)=>{ %>
+
+                                                        <img src=" <%= item.product.photo[0] %>" alt=""
+                                                            class="img-thumbnail" width="50px"><br><br>
+
+                                                        <% }) %>
+
+                                                </td>
+                                                <td>
+                                                    <%= order.payment_method %>
+                                                </td>
+                                                <td>
+                                                    <%= order.status %>
+                                                </td>
+
+                                                <td>
+                                                    <% if(order.status !== "Cancelled" ) { %>
+                                                        <a class="btn btn-sm btn-primary" href="/cancel_product/<%= order._id %>" onclick="return comfirm('Are you sure?')">Cancel</a>
+                                                    <% } %>
+                                                </td>
+
+
+
+                                                <!-- <td><span class="label label-primary">Processing</span></td>
+									<td><a href="order.html" class="btn btn-default">View</a></td> -->
+                                            </tr>
+
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="footer section text-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="social-media">
+                            <li>
+                                <a href="https://www.facebook.com/themefisher">
+                                    <i class="tf-ion-social-facebook"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.instagram.com/themefisher">
+                                    <i class="tf-ion-social-instagram"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.twitter.com/themefisher">
+                                    <i class="tf-ion-social-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.pinterest.com/themefisher/">
+                                    <i class="tf-ion-social-pinterest"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="footer-menu text-uppercase">
+                            <li>
+                                <a href="contact.html">CONTACT</a>
+                            </li>
+                            <li>
+                                <a href="shop.html">SHOP</a>
+                            </li>
+                            <li>
+                                <a href="pricing.html">Pricing</a>
+                            </li>
+                            <li>
+                                <a href="contact.html">PRIVACY POLICY</a>
+                            </li>
+                        </ul>
+                        <p class="copyright-text">Copyright &copy;2021, Designed &amp; Developed by <a
+                                href="https://themefisher.com/">Themefisher</a></p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <%- include ('../partials/user-Footer')%>
