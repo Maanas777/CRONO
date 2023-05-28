@@ -58,10 +58,13 @@ router.post('/order/:id',controller.orderConfirmation)
 router.get('/order_page',controller.order_find)
 router.get('/cancel_product/:id',controller.cancel_product)
 
+//paypal
 router.get('/paypal-success',controller.paypal_success)
 router.get('/paypal-success',controller.paypal_err)
 
-// router.get('/find_cart',controller)
+//coupon
+router.post('/redeem_coupon',controller.redeem_coupon)
+
 
 
 

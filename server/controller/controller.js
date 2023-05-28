@@ -7,6 +7,7 @@ const productSchema = require('../model/product_model')
 const cartSchema = require('../model/cart_model')
 const adressSchema = require('../model/adress')
 const orderSchema = require('../model/order')
+const couponSchema=require('../model/coupon')
 const accountSid = process.env.Account_SID;
 const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
@@ -227,9 +228,7 @@ exports.getCart = async (req, res) => {
   if (cart) {
     let products = cart.products
     res.render('user/cart', { user, products })
-    console.log("123");
-    console.log(cart);
-    console.log("123");
+    
   } else {
     res.render('user/emptyCart', { user })
   }
@@ -700,3 +699,29 @@ exports.cancel_product= async(req,res)=>{
   } 
 
 
+  //coupon
+
+  exports.redeem_coupon = async (req, res) => {
+    
+    const coupon = req.body.coupon;
+ 
+    const couponFInd = await couponSchema.findOne({ code: coupon });
+ 
+
+
+
+    if (couponFInd) {
+       res.json({
+          success: true,
+          message: 'Coupon available',
+          couponFInd: couponFInd,
+         
+       });
+    } else {
+       res.json({
+          success: false,
+          message: 'Coupon not found'
+       });
+    }
+ };
+ 

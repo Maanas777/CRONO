@@ -65,8 +65,8 @@
                               </div>
 
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment"
-                                    id="Razorpay" value="Razorpay">
+                                 <input class="payment-method-input" type="radio" name="payment" id="Razorpay"
+                                    value="Razorpay">
                                  <label class="payment-method-label" for="Razorpay">
                                     Razorpay
                                  </label>
@@ -76,8 +76,8 @@
 
 
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment"
-                                    id="cash-on-delivery" value="COD">
+                                 <input class="payment-method-input" type="radio" name="payment" id="cash-on-delivery"
+                                    value="COD">
                                  <label class="payment-method-label" for="cash-on-delivery">
                                     Cash on Delivery
                                  </label>
@@ -124,10 +124,32 @@
                               </div>
                               <% }); %>
                                  <div class="discount-code">
-                                    <p>Have a discount ? <a data-toggle="modal" data-target="#coupon-modal"
-                                          href="#!">enter it here</a></p>
+                                    <p>Have a discount ? <a data-toggle="modal" data-target="#coupon-modal">Redeem the
+                                          Coupon</a></p>
                                  </div>
-                                 <ul class="summary-prices">
+                                 <div class="card">
+                                    <div class="card-body d-flex">
+                                       <form id="couponForm" action="/redeem_coupon" method="post" class="flex-grow-1">
+                                          <div class="form-group d-flex">
+                                             <label for="couponCode" class="mr-2">Coupon Code</label>
+                                             <input type="text" class="form-control" name="coupon" id="couponCode" placeholder="Enter the coupon code">
+
+                                          </div>
+                                          <div id="couponMessage" style="padding-bottom: 10px; color: darkred;"></div>
+
+                                 
+                                          <button type="button" onclick="redeem()" class="btn btn-primary ml-auto" style="margin-bottom: 30px;">Redeem</button>
+                                       </form>
+                                    </div>
+                                 </div>
+                                 
+
+
+
+
+
+                                 <ul class="summary-prices ">
+
                                     <li>
                                        <span>Subtotal:
                                        </span>
@@ -145,15 +167,15 @@
 
                                  </div>
 
-
                         </div>
+
+
                      </div>
                   </div>
                </div>
             </div>
          </div>
       </div>
-
 
 
 
@@ -270,57 +292,106 @@
 
 
       </script>
+   
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
-
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-document.getElementById('rzp-button1').onclick = async function(e){
-    e.preventDefault();
-    
-let response =  await fetch("/razor",{
-   method:"POST",
-   headers:{"content-Type":application/json
-   },
-   body:JSON.stringify({
-      amount:500,
-   })
 
-})
-let orderData=await order.json()
+function redeem() {
+      var formData = $('#couponForm').serialize();
 
-    var options = {
-    "key": "YOUR_KEY_ID", // Enter the Key ID generated from the Dashboard
-    "amount": "500", 
-    "currency": "INR",
-    "order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-    "handler": function (response){
-        alert(response.razorpay_payment_id);
-        alert(response.razorpay_order_id);
-        alert(response.razorpay_signature)
-    },
- 
-};
-var rzp1 = new Razorpay(options);
-    
-rzp1.open();
+      $.ajax({
+         url: "/redeem_coupon",
+         type: "POST",
+         data: formData,
+         success: function(response) {
+            // Handle the response here
+            handleCouponResponse(response);
+         },
+         error: function(xhr, status, error) {
+            console.error('Coupon request failed. Status:', status);
+         }
+      });
+   }function handleCouponResponse(response) {
+   var couponMessage = document.getElementById('couponMessage');
+   var couponCodeInput = document.getElementById('couponCode');
+
+   if (couponCodeInput.value.trim() === '') {
+    // Clear the message if the coupon code input is empty
+    couponMessage.textContent = '';
+    return;
+  }
+
+   if (response.success) {
+      // Coupon is available, update the message or perform any other necessary actions
+      couponMessage.textContent = 'Coupon redeemed successfully.';
+   } else {
+      // Coupon is not available or there was an error
+      couponMessage.textContent = 'Coupon not valid or an error occurred.';
+   }
 }
 
-rzp1.on('payment.failed', function (response){
-        alert(response.error.code);
-        alert(response.error.description);
-        alert(response.error.source);
-        alert(response.error.step);
-        alert(response.error.reason);
-        alert(response.error.metadata.order_id);
-        alert(response.error.metadata.payment_id);
-});
+
+
 
 </script>
 
 
 
+
+
+
+
+
+
+<!-- <script>
+ let xhr; // Declare the XMLHttpRequest object outside the function
+
+function checkCoupon() {
+   const couponCode = document.getElementById('couponCode').value;
+
+   // Abort any ongoing request
+   if (xhr && xhr.readyState !== XMLHttpRequest.DONE) {
+      xhr.abort();
+   }
+
+   // Create a new XMLHttpRequest object
+   xhr = new XMLHttpRequest();
+
+   // Configure the request
+   xhr.open('POST', '/redeem_coupon/<%= address._id %>'); // Modify the URL to match your server route
+   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+   // Define the callback function
+   xhr.onload = function() {
+      if (xhr.status === 200) {
+         const response = JSON.parse(xhr.responseText);
+         const messageDiv = document.getElementById('couponMessage');
+
+         if (couponCode === '') {
+            messageDiv.innerHTML = ''; // Clear the message if the input field is empty
+            messageDiv.classList.remove('coupon-available'); // Remove the class for available coupon
+         } else if (response.success) {
+            messageDiv.innerHTML = 'Coupon available';
+            messageDiv.classList.add('coupon-available'); // Add the class for available coupon
+         } else {
+            messageDiv.innerHTML = 'Coupon not found';
+            messageDiv.classList.remove('coupon-available'); // Remove the class for available coupon
+         }
+      }
+   };
+
+   // Send the request
+   xhr.send('coupon=' + encodeURIComponent(couponCode));
+}
+
+
+
+ </script> -->
+
+
+
+ 
 
 
 
