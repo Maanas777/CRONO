@@ -96,7 +96,7 @@
                         <div class="block">
                            <h4 class="widget-title">Order Summary</h4>
 
-
+                           <% if (cart && cart.products) { %>
                            <% cart.products.forEach(function(product) { %>
                               <div class="media product-card ">
 
@@ -108,12 +108,12 @@
                                        <%= product.productId.name %><a href="product-single.html"></a>
                                     </h4>
                                     <p class="price">
-                                       ₹&nbsp; <%= product.productId.price %>
+                                       ₹ &nbsp; <%= product.productId.price %>
                                     </p>
                                     <span>Quantity <%= product.quantity %></span>&nbsp;&nbsp;&nbsp;&nbsp;
 
                                     <td class="total price">
-                                       <% var total=product.quantity * product.productId.price; %>
+                                       <% var total=product.quantity * product.productId.price %>
                                           <h5 id="product-total-price-<%= product.productId._id %>" class="item-total">
                                              <%= total %>
                                           </h5>
@@ -123,6 +123,9 @@
 
                               </div>
                               <% }); %>
+                              <% } else { %>
+                                 <p>No products in the cart.</p>
+                               <% } %>
                                  <div class="discount-code">
                                     <p>Have a discount ? <a data-toggle="modal" data-target="#coupon-modal">Redeem the
                                           Coupon</a></p>
@@ -143,10 +146,6 @@
                                     </div>
                                  </div>
                                  
-
-
-
-
 
                                  <ul class="summary-prices ">
 
@@ -178,55 +177,6 @@
       </div>
 
 
-
-
-
-      <footer class="footer section text-center">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <ul class="social-media">
-                     <li>
-                        <a href="https://www.facebook.com/themefisher">
-                           <i class="tf-ion-social-facebook"></i>
-                        </a>
-                     </li>
-                     <li>
-                        <a href="https://www.instagram.com/themefisher">
-                           <i class="tf-ion-social-instagram"></i>
-                        </a>
-                     </li>
-                     <li>
-                        <a href="https://www.twitter.com/themefisher">
-                           <i class="tf-ion-social-twitter"></i>
-                        </a>
-                     </li>
-                     <li>
-                        <a href="https://www.pinterest.com/themefisher/">
-                           <i class="tf-ion-social-pinterest"></i>
-                        </a>
-                     </li>
-                  </ul>
-                  <ul class="footer-menu text-uppercase">
-                     <li>
-                        <a href="contact.html">CONTACT</a>
-                     </li>
-                     <li>
-                        <a href="shop.html">SHOP</a>
-                     </li>
-                     <li>
-                        <a href="pricing.html">Pricing</a>
-                     </li>
-                     <li>
-                        <a href="contact.html">PRIVACY POLICY</a>
-                     </li>
-                  </ul>
-                  <p class="copyright-text">Copyright &copy;2021, Designed &amp; Developed by <a
-                        href="https://themefisher.com/">Themefisher</a></p>
-               </div>
-            </div>
-         </div>
-      </footer>
       <style>
          .payment-methods {
             display: flex;
@@ -297,6 +247,7 @@
 
 <script>
 
+
 function redeem() {
       var formData = $('#couponForm').serialize();
 
@@ -305,25 +256,39 @@ function redeem() {
          type: "POST",
          data: formData,
          success: function(response) {
+          
             // Handle the response here
+            
             handleCouponResponse(response);
          },
          error: function(xhr, status, error) {
             console.error('Coupon request failed. Status:', status);
          }
       });
-   }function handleCouponResponse(response) {
+   }
+   
+function handleCouponResponse(response) {
    var couponMessage = document.getElementById('couponMessage');
    var couponCodeInput = document.getElementById('couponCode');
+   var totalElement = document.getElementById('totalprice');
+
+  
 
    if (couponCodeInput.value.trim() === '') {
-    // Clear the message if the coupon code input is empty
-    couponMessage.textContent = '';
-    return;
-  }
+      // Clear the message if the coupon code input is empty
+      couponMessage.textContent = '';
+      return;
+   }
 
    if (response.success) {
-      // Coupon is available, update the message or perform any other necessary actions
+      // Coupon is available, update the message and subtract the coupon value from the total
+      var couponValue = response.amount;
+      console.log("aa",couponValue); // Assuming the coupon object has a "value" property
+      var total = parseFloat(totalElement.textContent);
+      
+      var updatedTotal = total - couponValue;
+      console.log(updatedTotal);
+      totalElement.textContent = updatedTotal.toFixed(2); // Update the total with 2 decimal places
       couponMessage.textContent = 'Coupon redeemed successfully.';
    } else {
       // Coupon is not available or there was an error
@@ -332,66 +297,9 @@ function redeem() {
 }
 
 
-
-
 </script>
 
 
-
-
-
-
-
-
-
-<!-- <script>
- let xhr; // Declare the XMLHttpRequest object outside the function
-
-function checkCoupon() {
-   const couponCode = document.getElementById('couponCode').value;
-
-   // Abort any ongoing request
-   if (xhr && xhr.readyState !== XMLHttpRequest.DONE) {
-      xhr.abort();
-   }
-
-   // Create a new XMLHttpRequest object
-   xhr = new XMLHttpRequest();
-
-   // Configure the request
-   xhr.open('POST', '/redeem_coupon/<%= address._id %>'); // Modify the URL to match your server route
-   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-   // Define the callback function
-   xhr.onload = function() {
-      if (xhr.status === 200) {
-         const response = JSON.parse(xhr.responseText);
-         const messageDiv = document.getElementById('couponMessage');
-
-         if (couponCode === '') {
-            messageDiv.innerHTML = ''; // Clear the message if the input field is empty
-            messageDiv.classList.remove('coupon-available'); // Remove the class for available coupon
-         } else if (response.success) {
-            messageDiv.innerHTML = 'Coupon available';
-            messageDiv.classList.add('coupon-available'); // Add the class for available coupon
-         } else {
-            messageDiv.innerHTML = 'Coupon not found';
-            messageDiv.classList.remove('coupon-available'); // Remove the class for available coupon
-         }
-      }
-   };
-
-   // Send the request
-   xhr.send('coupon=' + encodeURIComponent(couponCode));
-}
-
-
-
- </script> -->
-
-
-
- 
 
 
 

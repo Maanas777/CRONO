@@ -65,14 +65,14 @@ function validateBasic() {
  
  var name = document.forms["basic"]["name"].value.trim();
  var email = document.forms["basic"]["email"].value.trim();
-//  var username =document.forms['basic']['username'].value.trim()
+ //  var username =document.forms['basic']['username'].value.trim()
  var password = document.forms["basic"]["password"].value;
  var confirmpassword = document.forms["basic"]["confirmpassword"].value;
  var phone = document.forms["basic"]["phone"].value.trim();
  
  // Validation for name field
  if (name == "") {
-Swal.fire({      
+ wal.fire({      
         icon: 'error',
         title: 'Error',
         text: 'Name must be filled out',
@@ -125,7 +125,7 @@ Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Password should be at least 8 characters long. ',
-        confirmButtonColor: '#000000', // Set the confirm button color to black
+        confirmButtoolor: '#000000', // Set the confirm button color to black
       });
    return false;
  }

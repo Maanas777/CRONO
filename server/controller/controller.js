@@ -7,13 +7,13 @@ const productSchema = require('../model/product_model')
 const cartSchema = require('../model/cart_model')
 const adressSchema = require('../model/adress')
 const orderSchema = require('../model/order')
-const couponSchema=require('../model/coupon')
+const couponSchema = require('../model/coupon')
 const accountSid = process.env.Account_SID;
 const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
 const client = require("twilio")(accountSid, authToken);
 
-const paypal=require('paypal-rest-sdk');
+const paypal = require('paypal-rest-sdk');
 // const { default: orders } = require("razorpay/dist/types/orders");
 
 
@@ -109,30 +109,24 @@ exports.find_user = async (req, res) => {
 //logout
 
 exports.logout = (req, res) => {
-  req.session.destroy(function (err) {
-    if (err) {
-      console.log(err);
-      res.send("error")
-    }
-    else {
-      res.render('user/login')
-    }
-  })
-}
+  req.session.user = false;
+  req.session.destroy();
+  res.redirect("/");
+};
 
 exports.show_product = async (req, res) => {
   const product = await productSchema.find().limit(6);
   let user = req.session.user
-  if (user) {
-    res.render("user/shop", { product, user: user })
-  }
-  else {
-    res.redirect('/login')
+ 
+    res.render("user/shop", { product, user })
   }
 
+    
+  
 
 
-}
+
+
 
 exports.single_products = async (req, res) => {
   const id = req.params.id
@@ -151,7 +145,7 @@ exports.sendotp = async (req, res) => {
 
   const existingUser = await usersSchema.findOne({ phone: phone });
   if (!existingUser) {
-    return res.render("user/otp_login");
+    return res.render("user/forgot_otp",{msg:'Phone Number Not Found'});
   }
   req.session.phone = phone;
 
@@ -166,7 +160,7 @@ exports.sendotp = async (req, res) => {
         to: "+91" + phone,
         channel: "sms"
       })
-    res.render('user/otp_login', { msg: "otp send successfully" })
+    res.render('user/fpverify_otp', { msg: "otp send successfully" })
 
   } catch (error) {
     res.status(error?.status || 400)
@@ -202,12 +196,8 @@ exports.verifyotp = async (req, res) => {
 
 
     if (verification_check.status === 'approved') {
-      // If the verification is successful, do something
 
-      // req.session.isAuth=true;
-      // req.session.username = username;
-      // req.session.user = user;
-      res.redirect('/');
+      res.render('user/forgot_password');
     } else {
       // If the verification fails, return an error message
       res.render('user/otp_login', { msg: "Invalid verification code" });
@@ -219,26 +209,33 @@ exports.verifyotp = async (req, res) => {
 }
 
 exports.getCart = async (req, res) => {
-
-  let userId = req.session.user._id
   let user = req.session.user
-  let cart = await cartSchema.findOne({ userId: userId }).populate(
-    "products.productId"
-  )
-  if (cart) {
-    let products = cart.products
-    res.render('user/cart', { user, products })
-    
-  } else {
-    res.render('user/emptyCart', { user })
+  if(user){
+
+    let userId = req.session.user._id
+ 
+    let cart = await cartSchema.findOne({ userId: userId }).populate(
+      "products.productId"
+    )
+    if (cart) {
+      let products = cart.products
+      res.render('user/cart', { user, products })
+  
+    } else {
+      res.render('user/emptyCart', { user })
+    }
+  
   }
-
-
+  else{
+    res.redirect('/login')
+  }
 
   // res.render('user/cart',{user,products})
 }
 
 exports.addtocart = async (req, res) => {
+let user=req.session.user
+if(user){
   try {
     const userId = req.session.user?._id;
     const productId = req.params.id;
@@ -272,11 +269,17 @@ exports.addtocart = async (req, res) => {
     await userCart.save();
 
 
-    res.redirect('/products')
+    res.json({ message: 'Product added to cart successfully' });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
+
+}else{
+  res.redirect('/login')
+}
+
 };
 
 
@@ -398,15 +401,21 @@ exports.remove_product = async (req, res) => {
 
 exports.address = async (req, res) => {
   let user = req.session.user
-  try {
-    const data = await usersSchema.findOne({ _id: user })
-
-    res.render('user/add_address', { user, data: data.address })
+  if(user){
+    try {
+      const data = await usersSchema.findOne({ _id: user })
+  
+      res.render('user/add_address', { user, data: data.address })
+    }
+    catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
   }
-  catch (err) {
-    console.error(err);
-    res.status(500).send('Server Error');
+  else{
+    res.redirect('/')
   }
+ 
 
 
 }
@@ -487,11 +496,7 @@ exports.orderConfirmation = async (req, res) => {
       const user = req.session.user
       const userId = req.session.user?._id
       const id = req.params.id
-      // console.log("yyy");
-      // console.log(name);
-      // console.log("yxy");
-
-
+     
       const userModel = await usersSchema.findById(userId)
 
       const addressIndex = userModel.address.findIndex((item) =>
@@ -531,83 +536,90 @@ exports.orderConfirmation = async (req, res) => {
         totalPrice += item.price * item.quantity;
       });
 
+      if (req.query.couponValue) {
+        const couponValue = parseFloat(req.query.couponValue);
+        if (!isNaN(couponValue)) {
+          totalPrice -= couponValue;
+        }
+      }
+
       // will continue
-        if(payment=="COD"){
+      if (payment == "COD") {
 
-      const order = new orderSchema({
-        user: userId,
-        items: items,
-        total: totalPrice,
-        status: "Pending",
-        payment_method: payment,
-        createdAt: new Date(),
-        address: specifiedAddress,
-      });
-      let data = order
-      await order.save()
-
-
-      await cartSchema.deleteOne({ userId: userId });
+        const order = new orderSchema({
+          user: userId,
+          items: items,
+          total: totalPrice,
+          status: "Pending",
+          payment_method: payment,
+          createdAt: new Date(),
+          address: specifiedAddress,
+        });
+        let data = order
+        await order.save()
 
 
-      res.render('user/confirmation', { user, userId, specifiedAddress, cart, payment, data, totalPrice })
-    }
-    
-    
-    else if(payment=="paypal"){
-      
-    
+        await cartSchema.deleteOne({ userId: userId });
 
-      const order=new orderSchema({
-        user: userId,
-        items: items,
-        total: totalPrice,
-        status: "Pending",
-        payment_method: payment,
-        createdAt: new Date(),
-        address: specifiedAddress,
 
-      })
-      await order.save()
-      
-      cart.products.forEach((element) => {
-        paypalTotal += totalPrice;
-      });
+        res.render('user/confirmation', { user, userId, specifiedAddress, cart, payment, data, totalPrice })
+      }
+
+
+      else if (payment == "paypal") {
 
 
 
-     let createPayment = {
-        intent: "sale",
-        payer: { payment_method: "paypal" },
-        redirect_urls: {
-          return_url: "http://localhost:3002/paypal-success",
-          cancel_url: "http://localhost:3002/paypal-err",
-        },
-        transactions: [ 
-          {
-            amount: {
-              currency: "USD",
-              total: (paypalTotal / 82).toFixed(2), // Divide by 82 to convert to USD
-            },
-            description: "Super User Paypal Payment",
+        const order = new orderSchema({
+          user: userId,
+          items: items,
+          total: totalPrice,
+          status: "Pending",
+          payment_method: payment,
+          createdAt: new Date(),
+          address: specifiedAddress,
+
+        })
+        await order.save()
+
+        cart.products.forEach((element) => {
+          paypalTotal += totalPrice;
+        });
+
+
+
+        let createPayment = {
+          intent: "sale",
+          payer: { payment_method: "paypal" },
+          redirect_urls: {
+            return_url: "http://localhost:3002/paypal-success",
+            cancel_url: "http://localhost:3002/paypal-err",
           },
-        ],
-      }; 
+          transactions: [
+            {
+              amount: {
+                currency: "USD",
+                total: (paypalTotal / 82).toFixed(2), // Divide by 82 to convert to USD
+              },
+              description: "Super User Paypal Payment",
+            },
+          ],
+        };
 
-      paypal.payment.create(createPayment, function (error, payment) {
-        if (error) {
-          throw error;
-        } else {
-          for (let i = 0; i < payment.links.length; i++) {
-            if (payment.links[i].rel === "approval_url") {
-              res.redirect(payment.links[i].href);
+        paypal.payment.create(createPayment, function (error, payment) {
+          if (error) {
+            throw error;
+          } else {
+            for (let i = 0; i < payment.links.length; i++) {
+              if (payment.links[i].rel === "approval_url") {
+                res.redirect(payment.links[i].href);
+              }
             }
           }
-        }
-      });
-      await cartSchema.deleteOne({ userId: userId });
-      
-    }
+        });
+        await cartSchema.deleteOne({ userId: userId });
+
+      }
 
 
     } catch (error) {
@@ -616,50 +628,50 @@ exports.orderConfirmation = async (req, res) => {
     }
 
   } else {
-    res.redirect("/login")
+    res.redirect("/")
   }
 }
 
 
-exports.paypal_success= async(req,res)=>{
+exports.paypal_success = async (req, res) => {
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
   const user = req.session.user
-      const userId = req.session.user?._id
+  const userId = req.session.user?._id
 
   console.log(paypalTotal);
- 
-  
-  
+
+
+
 
   const execute_payment_json = {
     "payer_id": payerId,
     "transactions": [{
-        "amount": {
-          "currency": "USD",
-            "total": paypalTotal
-        }
+      "amount": {
+        "currency": "USD",
+        "total": paypalTotal
+      }
     }]
   };
-  paypal.payment.execute(paymentId, execute_payment_json, function  (error, payment) {
+  paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
     //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
 
-    
 
-  if  (error)  {
+
+    if (error) {
       console.log(error.response);
       throw error;
-  } else  {
-    
+    } else {
+
       console.log(JSON.stringify(payment));
-     res.render("user/paypalSuccess",{payment,user, userId,})
-  }
-});
+      res.render("user/paypalSuccess", { payment, user, userId, })
+    }
+  });
 
 }
 
 
-exports.paypal_err=(req,res)=>{
+exports.paypal_err = (req, res) => {
   console.log(req.query);
   res.send("error")
 }
@@ -667,61 +679,128 @@ exports.paypal_err=(req,res)=>{
 
 
 
-exports.order_find= async(req,res)=>{
-  let user=req.session.user
+exports.order_find = async (req, res) => {
+  let user = req.session.user
 
-  const order=await orderSchema.find().populate('user').populate('items.product').populate('address')
+  const order = await orderSchema.find().populate('user').populate('items.product').populate('address')
 
-  res.render('user/order',{order,user})
+  res.render('user/order', { order, user })
 
 }
 
 
-exports.cancel_product= async(req,res)=>{
+exports.cancel_product = async (req, res) => {
 
-  let id=req.params.id
+  let id = req.params.id
 
-  const cancel_product= await orderSchema.findByIdAndUpdate(id,
+  const cancel_product = await orderSchema.findByIdAndUpdate(id,
     {
       status: 'Cancelled'
     },
     { new: true }
-    
-    ) 
-    if(cancel_product){
-      res.redirect("/order_page");
 
-    }else {
-      // Product not found
+  )
+  if (cancel_product) {
+    res.redirect("/order_page");
 
-      res.send("error");
-    }
-  } 
+  } else {
+    // Product not found
 
-
-  //coupon
-
-  exports.redeem_coupon = async (req, res) => {
-    
-    const coupon = req.body.coupon;
- 
-    const couponFInd = await couponSchema.findOne({ code: coupon });
- 
+    res.send("error");
+  }
+}
 
 
+//coupon
 
-    if (couponFInd) {
-       res.json({
-          success: true,
-          message: 'Coupon available',
-          couponFInd: couponFInd,
-         
-       });
-    } else {
-       res.json({
-          success: false,
-          message: 'Coupon not found'
-       });
-    }
- };
- 
+exports.redeem_coupon = async (req, res) => {
+
+  const coupon = req.body.coupon;
+
+  const couponFInd = await couponSchema.findOne({ code: coupon });
+
+
+  if (couponFInd) {
+    const amount = couponFInd.discount
+
+    res.json({
+      success: true,
+      message: 'Coupon available',
+      couponFInd: couponFInd,
+      amount: parseInt(amount)
+
+    });
+  } else {
+    res.json({
+      success: false,
+      message: 'Coupon not found'
+    });
+  }
+};
+
+//forgot password
+
+exports.otp_page = (req, res) => {
+  let user=req.session.user
+  res.render('user/forgot_otp',{user})
+}
+
+
+
+
+
+exports.forgot_password = async (req, res) => {
+
+  const phoneNumber = req.session.phone;
+  const password = req.body.password;
+  console.log(phoneNumber, "**)(");
+
+
+  try {
+
+    usersSchema.findOne({ phone: phoneNumber }).then((user) => {
+      const saltRounds = 10; // You can adjust the number of salt rounds as needed
+      bcrypt.hash(password, saltRounds, (err, hash) => {
+        if (err) {
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while hashing the password",
+          });
+        } else {
+          usersSchema
+            .findOneAndUpdate(
+              { phone: phoneNumber },
+              { password: hash },
+              { useFindAndModify: false }
+            )
+            .then((data) => {
+              if (!data) {
+                res
+                  .status(404)
+                  .send({
+                    message: `Cannot update user with ID: ${phone}. User not found.`,
+                  });
+              } else {
+                res.render("user/login", {
+                  message: "Successfully updated password",
+                });
+              }
+            })
+            .catch((err) => {
+              res
+                .status(500)
+                .send({ message: "Error updating user information" });
+            });
+        }
+      });
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .send({
+        message: err.message || "Some error occurred while verifying the code",
+      });
+  }
+  }
+
+;

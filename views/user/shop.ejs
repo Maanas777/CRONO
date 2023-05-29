@@ -41,8 +41,11 @@
 												<a href="#!"><i class="tf-ion-ios-heart"></i></a>
 											</li>
 											<li>
-												<a href="#!"><i class="tf-ion-android-cart"></i></a>
-											</li>
+												<a href="/addcart/<%= product._id %>" class="add-to-cart-btn" data-product-id="<%= product._id %>">
+												  <i class="tf-ion-android-cart"></i>
+												</a>
+											  </li>
+											  
 										</ul>
 									</div>
 								</div>
@@ -62,59 +65,41 @@
 							</div>
 						</div>
 						<% } }) %>
+						
 				</div>
 			</div>
+			
 		</section>
+		
+		
+		<script>
+
+// Assuming you have jQuery included in your project
+$('.add-to-cart-btn').on('click', function(event) {
+  event.preventDefault();
+
+  // Get the product ID from the data attribute
+  const productId = $(this).data('product-id');
+
+  // Make an AJAX request to add the product to the cart
+  $.ajax({
+    url: '/addcart/' + productId,
+    method: 'GET',
+    success: function(response) {
+		toastr.success(response.message);
+		// Handle the success response (e.g., show toaster message)
+    },
+	error: function (error) {
+      toastr.error('An error occurred while adding the product to cart');
+    }
+  });
+});
 
 
+		</script>
 
-		<footer class="footer section text-center">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<ul class="social-media">
-							<li>
-								<a href="https://www.facebook.com/themefisher">
-									<i class="tf-ion-social-facebook"></i>
-								</a>
-							</li>
-							<li>
-								<a href="https://www.instagram.com/themefisher">
-									<i class="tf-ion-social-instagram"></i>
-								</a>
-							</li>
-							<li>
-								<a href="https://www.twitter.com/themefisher">
-									<i class="tf-ion-social-twitter"></i>
-								</a>
-							</li>
-							<li>
-								<a href="https://www.pinterest.com/themefisher/">
-									<i class="tf-ion-social-pinterest"></i>
-								</a>
-							</li>
-						</ul>
-						<ul class="footer-menu text-uppercase">
-							<li>
-								<a href="contact.html">CONTACT</a>
-							</li>
-							<li>
-								<a href="shop.html">SHOP</a>
-							</li>
-							<li>
-								<a href="pricing.html">Pricing</a>
-							</li>
-							<li>
-								<a href="contact.html">PRIVACY POLICY</a>
-							</li>
-						</ul>
-						<p class="copyright-text">Copyright &copy;2021, Designed &amp; Developed by <a
-								href="https://themefisher.com/">Themefisher</a></p>
-					</div>
-				</div>
-			</div>
-		</footer>
 
+	
 
 
 		<%- include ('../partials/user-Footer')%>
