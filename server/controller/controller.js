@@ -270,7 +270,7 @@ if(user){
 
 
     res.json({ message: 'Product added to cart successfully' });
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -375,19 +375,14 @@ exports.remove_product = async (req, res) => {
     const userId = req.session.user?._id;
     const productId = req.params.id;
 
-    ;
-
     const result = await cartSchema.findOneAndUpdate(
       { userId: userId },
       { $pull: { products: { productId: productId } } },
       { new: true }
     );
 
-
-
     if (result) {
-      res.redirect("/cart");
-
+      res.json({ message: 'Product Removed from Cart' });
     } else {
       // No matching document found
       throw new Error("Product not found in the cart.");

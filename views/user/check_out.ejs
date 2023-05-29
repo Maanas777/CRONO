@@ -123,9 +123,9 @@
 
                               </div>
                               <% }); %>
-                              <% } else { %>
-                                 <p>No products in the cart.</p>
-                               <% } %>
+                               <% } else { %>
+                        <p>No products in the cart.</p>
+                      <% } %>
                                  <div class="discount-code">
                                     <p>Have a discount ? <a data-toggle="modal" data-target="#coupon-modal">Redeem the
                                           Coupon</a></p>
@@ -248,6 +248,7 @@
 <script>
 
 
+
 function redeem() {
       var formData = $('#couponForm').serialize();
 
@@ -266,6 +267,7 @@ function redeem() {
          }
       });
    }
+   
    
 function handleCouponResponse(response) {
    var couponMessage = document.getElementById('couponMessage');
