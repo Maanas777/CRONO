@@ -831,20 +831,29 @@ exports.forgot_password = async (req, res) => {
 }
 
 exports.getWallet = async (req, res) => {
-  const userId = req.session.user_id;
+  // const userId = req.session.user_id;
+  const userId = req.session.user?._id
+  console.log(userId,"kk");
   const user = req.session.user;
+ 
 
   try {
 
     let sum = 0
 
     const wallet_data = await walletSchema.find({ userId: userId });
+    console.log(wallet_data);
     for (let i = 0; i < wallet_data.length; i++) {
 
       sum += wallet_data[i].balance
 
+     
 
-    }    res.render('user/wallet',{sum,user})
+
+    } 
+    console.log(sum,"wall");
+    
+    res.render('user/wallet',{sum,user})
 
   } catch (err) {
     console.log(err);

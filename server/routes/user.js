@@ -105,7 +105,7 @@ router.get('/paypal-success',controller.paypal_err)
 router.post('/redeem_coupon',controller.redeem_coupon)
 
 //wallet
-router.get('/wallet_page',controller.getWallet)
+router.get('/wallet_page',isLoggedIn,controller.getWallet)
 
 
 
