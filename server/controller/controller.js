@@ -8,6 +8,7 @@ const cartSchema = require('../model/cart_model')
 const adressSchema = require('../model/adress')
 const orderSchema = require('../model/order')
 const couponSchema = require('../model/coupon')
+const walletSchema=require('../model/wallet')
 const accountSid = process.env.Account_SID;
 const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
@@ -81,13 +82,16 @@ exports.find_user = async (req, res) => {
   try {
     const user = await usersSchema.findOne({ email: email });
 
+
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
+
 
       if (isMatch) {
         if (user.isBlocked) {
           res.render("user/login", {
             message: "user cant be login plz contact admin",
+            user: user  // Pass the "user" object to the view
           });
         } else {
 
@@ -110,6 +114,7 @@ exports.find_user = async (req, res) => {
 
 exports.logout = (req, res) => {
   req.session.user = false;
+
   req.session.destroy();
   res.redirect("/");
 };
@@ -117,12 +122,12 @@ exports.logout = (req, res) => {
 exports.show_product = async (req, res) => {
   const product = await productSchema.find().limit(6);
   let user = req.session.user
- 
-    res.render("user/shop", { product, user })
-  }
 
-    
-  
+  res.render("user/shop", { product, user })
+}
+
+
+
 
 
 
@@ -145,7 +150,7 @@ exports.sendotp = async (req, res) => {
 
   const existingUser = await usersSchema.findOne({ phone: phone });
   if (!existingUser) {
-    return res.render("user/forgot_otp",{msg:'Phone Number Not Found'});
+    return res.render("user/forgot_otp", { msg: 'Phone Number Not Found' });
   }
   req.session.phone = phone;
 
@@ -210,23 +215,23 @@ exports.verifyotp = async (req, res) => {
 
 exports.getCart = async (req, res) => {
   let user = req.session.user
-  if(user){
+  if (user) {
 
     let userId = req.session.user._id
- 
+
     let cart = await cartSchema.findOne({ userId: userId }).populate(
       "products.productId"
     )
     if (cart) {
       let products = cart.products
       res.render('user/cart', { user, products })
-  
+
     } else {
       res.render('user/emptyCart', { user })
     }
-  
+
   }
-  else{
+  else {
     res.redirect('/login')
   }
 
@@ -234,51 +239,51 @@ exports.getCart = async (req, res) => {
 }
 
 exports.addtocart = async (req, res) => {
-let user=req.session.user
-if(user){
-  try {
-    const userId = req.session.user?._id;
-    const productId = req.params.id;
+  let user = req.session.user
+  if (user) {
+    try {
+      const userId = req.session.user?._id;
+      const productId = req.params.id;
 
-    let userCart = await cartSchema.findOne({ userId: userId });
+      let userCart = await cartSchema.findOne({ userId: userId });
 
-    if (!userCart) {
-      // If the user's cart doesn't exist, create a new cart
-      const newCart = new cartSchema({ userId: userId, products: [] });
-      await newCart.save();
-      userCart = newCart;
+      if (!userCart) {
+        // If the user's cart doesn't exist, create a new cart
+        const newCart = new cartSchema({ userId: userId, products: [] });
+        await newCart.save();
+        userCart = newCart;
+      }
+
+      const productIndex = userCart.products.findIndex(
+        (product) => product.productId == productId
+
+      );
+      console.log(productIndex);
+
+      if (productIndex === -1) {
+        // If the product is not in the cart, add it
+        userCart.products.push({ productId, quantity: 1 });
+
+      }
+      else {
+        // If the product is already in the cart, increase its quantity by 1
+        userCart.products[productIndex].quantity += 1;
+
+      }
+
+      await userCart.save();
+
+
+      res.json({ message: 'Product added to cart successfully' });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
     }
 
-    const productIndex = userCart.products.findIndex(
-      (product) => product.productId == productId
-
-    );
-    console.log(productIndex);
-
-    if (productIndex === -1) {
-      // If the product is not in the cart, add it
-      userCart.products.push({ productId, quantity: 1 });
-
-    }
-    else {
-      // If the product is already in the cart, increase its quantity by 1
-      userCart.products[productIndex].quantity += 1;
-
-    }
-
-    await userCart.save();
-
-
-    res.json({ message: 'Product added to cart successfully' });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+  } else {
+    res.redirect('/login')
   }
-
-}else{
-  res.redirect('/login')
-}
 
 };
 
@@ -396,10 +401,10 @@ exports.remove_product = async (req, res) => {
 
 exports.address = async (req, res) => {
   let user = req.session.user
-  if(user){
+  if (user) {
     try {
       const data = await usersSchema.findOne({ _id: user })
-  
+
       res.render('user/add_address', { user, data: data.address })
     }
     catch (err) {
@@ -407,10 +412,10 @@ exports.address = async (req, res) => {
       res.status(500).send('Server Error');
     }
   }
-  else{
+  else {
     res.redirect('/')
   }
- 
+
 
 
 }
@@ -491,7 +496,7 @@ exports.orderConfirmation = async (req, res) => {
       const user = req.session.user
       const userId = req.session.user?._id
       const id = req.params.id
-     
+
       const userModel = await usersSchema.findById(userId)
 
       const addressIndex = userModel.address.findIndex((item) =>
@@ -705,6 +710,33 @@ exports.cancel_product = async (req, res) => {
   }
 }
 
+exports.return_product = async (req, res) => {
+  let id = req.params.id
+
+  const return_product = await orderSchema.findByIdAndUpdate(id, {
+
+    status: 'Returned'
+  },
+    { new: true }
+  )
+  if (return_product) {
+    res.redirect("/order_page");
+  }
+  else {
+    // Product not found
+
+    res.send("error");
+  }
+}
+
+
+
+
+
+
+
+
+
 
 //coupon
 
@@ -736,8 +768,8 @@ exports.redeem_coupon = async (req, res) => {
 //forgot password
 
 exports.otp_page = (req, res) => {
-  let user=req.session.user
-  res.render('user/forgot_otp',{user})
+  let user = req.session.user
+  res.render('user/forgot_otp', { user })
 }
 
 
@@ -796,6 +828,25 @@ exports.forgot_password = async (req, res) => {
         message: err.message || "Some error occurred while verifying the code",
       });
   }
-  }
+}
 
-;
+exports.getWallet = async (req, res) => {
+  const userId = req.session.user_id;
+  const user = req.session.user;
+
+  try {
+
+    let sum = 0
+
+    const wallet_data = await walletSchema.find({ userId: userId });
+    for (let i = 0; i < wallet_data.length; i++) {
+
+      sum += wallet_data[i].balance
+
+
+    }    res.render('user/wallet',{sum,user})
+
+  } catch (err) {
+    console.log(err);
+  }
+}

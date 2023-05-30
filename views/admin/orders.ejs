@@ -32,6 +32,7 @@
                                     <th scope="col">price</th>
                                     <th scope="col">Image</th>
                                     <th scope="col">Edit Status</th>
+                                    <th scope="col">       </th>
 
                                 </tr>
                             </thead>
@@ -85,7 +86,15 @@
                                         <td> <a data-bs-toggle="modal"
                                                 data-bs-target="#exampleModal<%= order._id  %>"><i
                                                     class="fas fa-pencil-alt"></i></a></td>
-
+                                           
+                                                  <% if(order.status=='Returned'){ %>  
+                                                   
+                                                    <td>
+                                                        <a href="/userRefund/<%= order._id %>">
+                                                        <button type="button" class = "btn btn-primary btn-sm">Allow refund</button>
+                                                    </a>
+                                                    </td>
+                                                   <% } %>
 
 
                                     </tr>

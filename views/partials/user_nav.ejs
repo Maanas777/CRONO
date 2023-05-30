@@ -45,21 +45,23 @@
 					</li><!-- / Search -->
 
 					<!-- Languages -->
-
-                    <% if (user) { %>
-						<div class="user-dropdown">
-						  <%= user.name %>
-						  <a href="/logout" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-							Logout
-						  </a>
-						</div>
-					  <% } else{ %>
-
-					<li class="dropdown search dropdown-slide">
-						<a href="/login" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-							 Login</a><!-- / Languages -->
-                      
-					 <% } %>
+					<% if (user) { %>	
+						<% if (!user.isBlocked) { %>
+						  <div class="user-dropdown">
+							<%= user.name %>
+							<a href="/logout" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+							  Logout
+							</a>
+						  </div>
+						<% } %>
+					  <% } else { %>
+						<li class="dropdown search dropdown-slide">
+						  <a href="/login" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+							Login
+						  </a><!-- / Languages -->
+						</li>
+					  <% } %>
+					  
 					
 				</ul><!-- / .nav .navbar-nav .navbar-right -->
 			</div>
@@ -122,6 +124,15 @@
 					<!-- Blog -->
 					<li class="dropdown ">
 						<a href="/order_page">Orders</a>
+						<div class="dropdown-menu">
+						
+
+								
+								
+						</div><!-- / .dropdown-menu -->
+					</li>
+					<li class="dropdown ">
+						<a href="/wallet_page">Wallet</a>
 						<div class="dropdown-menu">
 						
 

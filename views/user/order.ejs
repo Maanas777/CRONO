@@ -33,7 +33,7 @@
                                             <th>Image</th>
                                             <th>Payment Method</th>
                                             <th>Status</th>
-                                            <th>cancel</th>
+                                            <th></th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -54,7 +54,7 @@
 
 
                                                 <td>
-                                                    <%= order.total %>
+                                                   $   <%= order.total %>
                                                 </td>
 
                                                 <td>
@@ -79,13 +79,19 @@
                                                 <td>
                                                     <%= order.status %>
                                                 </td>
-
                                                 <td>
-                                                    <% if(order.status !== "Cancelled" ) { %>
-                                                        <a class="btn btn-sm btn-primary" href="/cancel_product/<%= order._id %>" onclick="return comfirm('Are you sure?')">Cancel</a>
-                                                    <% } %>
-                                                </td>
+                                                    <% if (order.status !== "Cancelled" && order.status !=="Delivered"&&order.status !=="Returned"&&order.status !=="Refunded Amount") { %>
+                                                        <a class="btn btn-sm btn-primary" href="/cancel_product/<%= order._id %>" onclick="return confirm('Are you sure?')">Cancel</a>
+                                                   
+                                                        <% }  %>
 
+                                                        <%   if (order.status === "Delivered") { %>
+                                                            <a class="btn btn-sm btn-primary" href="/return_product/<%= order._id %>" onclick="return confirm('Are you sure?')">Return</a>
+                                                    <% } %>
+
+                                                   
+                                                </td>
+                                                
 
 
                                                 <!-- <td><span class="label label-primary">Processing</span></td>

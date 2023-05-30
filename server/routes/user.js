@@ -1,6 +1,7 @@
 const express=require('express')
 const router= express.Router()
 const controller=require('../controller/controller')
+const userSchema=require('../model/model')
 // const session=require('express-session')
 
 
@@ -19,10 +20,27 @@ const isLoggedIn=(req,res,next)=>{
     }
 }
 
+const isUserBlocked=async(req,res,next)=>{
+    const userId=req.session.user?._id
+    const user= await userSchema.findById(userId)
+console.log(user,"909");
+    if(user.isBlocked){
+        req.session.save(() => {
+            req.session.user=false
+            res.redirect('/login'); 
+         })
+         return
+
+    }else{
+      next()
+    }
+}
+
 
 
 router.get('/',(req,res)=>{
     let user=req.session.user
+
     res.render('user/index',{user:user})
      
 })
@@ -32,7 +50,7 @@ router.get('/',(req,res)=>{
 
 router.get('/login',(req,res)=>{
     let user=req.session.user
-    res.render('user/login',{user:user})
+    res.render('user/login',{user})
 } 
 )
 
@@ -57,19 +75,20 @@ router.get('/logout',controller.logout)
 router.get('/products',controller.show_product)
 router.get('/single_pro/:id',controller.single_products)
 
-router.get('/addcart/:id',controller.addtocart)
-router.get('/cart',controller.getCart)
-router.post('/increase_product',controller.increase_product)
-router.post('/decreaseQuantity',controller.decreaseQuantity)
-router.get('/productRemove/:id',controller.remove_product)
-router.get('/add_adress',controller.address)
+router.get('/addcart/:id',isUserBlocked,controller.addtocart)
+router.get('/cart',isUserBlocked,controller.getCart)
+router.post('/increase_product',isUserBlocked,controller.increase_product)
+router.post('/decreaseQuantity',isUserBlocked,controller.decreaseQuantity)
+router.get('/productRemove/:id',isUserBlocked,controller.remove_product)
+router.get('/add_adress',isUserBlocked,controller.address)
 
-router.post('/add_address',controller.add_address)
-router.get('/checkout/:id',isLoggedIn,controller.checkout)
+router.post('/add_address',isUserBlocked,controller.add_address)
+router.get('/checkout/:id',isLoggedIn,isUserBlocked,controller.checkout)
 
-router.post('/order/:id',controller.orderConfirmation)
-router.get('/order_page',isLoggedIn,controller.order_find)
-router.get('/cancel_product/:id',controller.cancel_product)
+router.post('/order/:id',isUserBlocked,controller.orderConfirmation)
+router.get('/order_page',isLoggedIn,isUserBlocked,controller.order_find)
+router.get('/cancel_product/:id',isUserBlocked,controller.cancel_product)
+router.get('/return_product/:id',controller.return_product)
 
 //forgot password
 router.get('/forgot_otp',controller.otp_page)
@@ -84,6 +103,10 @@ router.get('/paypal-success',controller.paypal_err)
 
 //coupon
 router.post('/redeem_coupon',controller.redeem_coupon)
+
+//wallet
+router.get('/wallet_page',controller.getWallet)
+
 
 
 

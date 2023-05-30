@@ -4,28 +4,50 @@ const admincontoller=require('../controller/admin_controller')
 const multer=require('multer')
 const fs=require('fs')
 const category=require('../model/add_category')
+const path=require('path')
 
 // Configure multer middleware
-const storage = multer.diskStorage({
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // Make sure directory exists
+//     const uploadDir = './uploads';
+//     if (!fs.existsSync(uploadDir)) {
+//       fs.mkdirSync(uploadDir);
+//     }
+//     cb(null, uploadDir);
+//   },
+//   filename: function (req, file, cb) {
+//     // Remove spaces and special characters from original filename
+//     const originalname = file.originalname.replace(/[^a-zA-Z0-9]/g, "");
+//     // Set filename to fieldname + current date + original filename
+//     cb(null, `${file.fieldname}_${Date.now()}_${originalname}`);
+//   },
+// });
+
+// const upload = multer({
+//   storage: storage,
+// });
+
+
+
+var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Make sure directory exists
-    const uploadDir = './uploads';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
+    // make sure directory exists
+    if (!fs.existsSync("./uploads")) {
+      fs.mkdirSync("./uploads");
     }
-    cb(null, uploadDir);
+    cb(null, "./uploads");
   },
   filename: function (req, file, cb) {
-    // Remove spaces and special characters from original filename
-    const originalname = file.originalname.replace(/[^a-zA-Z0-9]/g, "");
-    // Set filename to fieldname + current date + original filename
-    cb(null, `${file.fieldname}_${Date.now()}_${originalname}`);
+    // remove spaces and special characters from original filename
+    var originalname = file.originalname.replace(/[^a-zA-Z0-9]/g, "");
+    // set filename to fieldname + current date + original filename
+    cb(null, file.fieldname + "_" + Date.now() + "_" + originalname);
   },
 });
-
-const upload = multer({
+var upload = multer({
   storage: storage,
-});
+}).array('photo',10)
 
 
 
@@ -57,13 +79,13 @@ router.get('/users',(req,res)=>{
 
 
 router.post("/admin",admincontoller.adminlogin);
-router.post('/add_product', upload.array('photo', 5),admincontoller.addProduct);
+router.post('/add_product',upload,admincontoller.addProduct);
 
 // router.get("/add_product_page", admincontoller.addproductpage)
 
 router.get('/admin_products',admincontoller.find_product)
 router.get("/edit_pdt/:id",admincontoller.edit_product_page)
-router.post("/update_product/:id", upload.single('photo'), admincontoller.updateproduct);
+router.post("/update_product/:id", upload, admincontoller.updateproduct);
 
 router.get("/block_pdt/:id",admincontoller.block_product)
 router.get("/unblock_product/:id",admincontoller.unblock_product)
@@ -88,6 +110,9 @@ router.get('/deactivate_coupon/:id',admincontoller.deactivate_coupon)
 router.get('/activate_coupon/:id',admincontoller.activate_coupon)
 router.post('/edit_coupon/:id',admincontoller.edit_coupon)
 
+
+//wallet
+router.get('/userRefund/:id',admincontoller.userRefund)
 
 
 
