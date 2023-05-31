@@ -17,8 +17,7 @@ var couponSchema = new mongoose.Schema({
         required: true
 
     },
-
-
+    
 
     status: {
         type: Boolean,

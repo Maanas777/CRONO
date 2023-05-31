@@ -1,26 +1,33 @@
 <%- include ('../partials/user-Header')%>
-  <%- include ('../partials/user_nav')%>
+<%- include ('../partials/user_nav')%>
 
-
-    <section class="page-header">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="content">
-              <h1 class="page-name">Wallet</h1>
-              <ol class="breadcrumb">
-                <li><a href="index.html">Home</a></li>
-                <li class="active">cart</li>
-              </ol>
-            </div>
-          </div>
+<section class="page-header" style="background-image: url('path/to/header-image.jpg');">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="content">
+          <h1 class="page-name" style="font-family: 'Arial', sans-serif; font-size: 48px;">Wallet</h1>
+          <ol class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+            <li class="active">Cart</li>
+          </ol>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <p>Refunded amount: <%= sum %></p>
+<section class="content-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="refunded-amount">
+          <p class="amount-label" style="font-size: 24px; color: #333;">Refunded amount:</p>
+          <p class="amount-value" style="font-size: 36px; color: #ff5722;"><%= sum %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-
-
-
-    <%- include ('../partials/user-Footer')%>
+<%- include ('../partials/user-Footer')%>

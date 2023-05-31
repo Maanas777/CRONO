@@ -5,15 +5,16 @@ const Razorpay = require('razorpay');
 const usersSchema = require('../model/model')
 const productSchema = require('../model/product_model')
 const cartSchema = require('../model/cart_model')
+const categorySchema=require('../model/add_category')
 const adressSchema = require('../model/adress')
 const orderSchema = require('../model/order')
 const couponSchema = require('../model/coupon')
-const walletSchema=require('../model/wallet')
+const walletSchema = require('../model/wallet')
 const accountSid = process.env.Account_SID;
 const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
 const client = require("twilio")(accountSid, authToken);
-
+const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
 // const { default: orders } = require("razorpay/dist/types/orders");
 
@@ -91,7 +92,7 @@ exports.find_user = async (req, res) => {
         if (user.isBlocked) {
           res.render("user/login", {
             message: "user cant be login plz contact admin",
-            user: user  // Pass the "user" object to the view
+            user // Pass the "user" object to the view
           });
         } else {
 
@@ -99,10 +100,10 @@ exports.find_user = async (req, res) => {
           res.redirect("/");
         }
       } else {
-        res.render("user/login", { message: "Invalid Passowrd" });
+        res.render("user/login", { message: "Invalid Passowrd", user });
       }
     } else {
-      res.render("user/login", { message: "Invalid User" });
+      res.render("user/login", { message: "Invalid User", user });
     }
   } catch (error) {
     console.log(error);
@@ -121,12 +122,32 @@ exports.logout = (req, res) => {
 
 exports.show_product = async (req, res) => {
   const product = await productSchema.find().limit(6);
+
+  const category=await categorySchema.find()
+  console.log("aa",category);
   let user = req.session.user
 
-  res.render("user/shop", { product, user })
+  res.render("user/shop", { product, user,category })
 }
 
+exports.filter_category=async(req,res)=>{
+  try{
+    let user = req.session.user
+    const id = req.params.id;
+    const categori = await categorySchema.findOne({_id:id});
+    const product = await productSchema.find({brand:categori.category})
+    console.log('ss',product);
 
+    const category=await categorySchema.find()
+  
+    res.render("user/shop", { product, user,category })
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).send({error:"internal server error"})
+  }
+
+}
 
 
 
@@ -258,7 +279,7 @@ exports.addtocart = async (req, res) => {
         (product) => product.productId == productId
 
       );
-      console.log(productIndex);
+
 
       if (productIndex === -1) {
         // If the product is not in the cart, add it
@@ -288,15 +309,12 @@ exports.addtocart = async (req, res) => {
 };
 
 
-exports.updateQuantity = async (req, res) => {
-  console.log("zndlkvndlnf");
-}
 
 
 // increment quantity 
 
 exports.increase_product = async (req, res) => {
-  console.log("ttt");
+
   const userId = req.session.user
   const cartId = req.body.cartId
   // console.log(cartId);
@@ -309,7 +327,7 @@ exports.increase_product = async (req, res) => {
 
     let cartIndex = cart.products.findIndex(items => items.productId.equals(cartId))
 
-    console.log(cartIndex);
+
 
     cart.products[cartIndex].quantity += 1
     await cart.save()
@@ -428,7 +446,7 @@ exports.add_address = async (req, res) => {
     const { name, address, phone, zip, city, state } = req.body
 
     const user = await usersSchema.findOne({ _id: userId })
-    console.log(user);
+
     if (!user) {
       res.status(404).send('User not found.');
       return;
@@ -496,6 +514,11 @@ exports.orderConfirmation = async (req, res) => {
       const user = req.session.user
       const userId = req.session.user?._id
       const id = req.params.id
+      const total = req.body.total;
+
+      const cartdisc= await cartSchema.findOne({userId:userId})
+     
+      const discount=cartdisc.total
 
       const userModel = await usersSchema.findById(userId)
 
@@ -533,7 +556,7 @@ exports.orderConfirmation = async (req, res) => {
 
       let totalPrice = 0;
       items.forEach((item) => {
-        totalPrice += item.price * item.quantity;
+        totalPrice += (item.price * item.quantity)-discount;
       });
 
       if (req.query.couponValue) {
@@ -639,7 +662,7 @@ exports.paypal_success = async (req, res) => {
   const user = req.session.user
   const userId = req.session.user?._id
 
-  console.log(paypalTotal);
+
 
 
 
@@ -739,31 +762,72 @@ exports.return_product = async (req, res) => {
 
 
 //coupon
-
 exports.redeem_coupon = async (req, res) => {
+  const { coupon } = req.body;
+  const userId = req.session.user._id;
 
-  const coupon = req.body.coupon;
+  const couponFind = await couponSchema.findOne({ code: coupon });
+  const userCoupon = await usersSchema.findById(userId);
 
-  const couponFInd = await couponSchema.findOne({ code: coupon });
-
-
-  if (couponFInd) {
-    const amount = couponFInd.discount
-
-    res.json({
-      success: true,
-      message: 'Coupon available',
-      couponFInd: couponFInd,
-      amount: parseInt(amount)
-
-    });
-  } else {
-    res.json({
+  if (userCoupon.coupon.includes(coupon)) {
+    return res.json({
       success: false,
-      message: 'Coupon not found'
+      message: 'Coupon Already used'
     });
   }
+
+  userCoupon.coupon.push(coupon);
+  await userCoupon.save();
+
+  if (!couponFind || couponFind.status === false) {
+    return res.json({
+      success: false,
+      message: couponFind ? 'Coupon Deactivated' : 'Coupon not found'
+    });
+  }
+
+  const currentDate = new Date();
+  const expirationDate = new Date(couponFind.date);
+
+  if (currentDate > expirationDate) {
+    return res.json({
+      success: false,
+      message: 'Coupon Expired'
+    });
+  }
+
+  const amount = couponFind.discount;
+
+  res.json({
+    success: true,
+    message: 'Coupon available',
+    couponFind,
+    amount: parseInt(amount)
+  });
+
+
+  try {
+    
+    const cart = await cartSchema.findOne({userId:userId})
+   cart.total=amount
+   
+    if (!cart) {
+console.log("Cart not found");
+      return; // or throw an error
+    }
+  
+    cart.total = amount;
+    console.log(cart.total,"---");
+    await cart.save();
+
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    // handle the error appropriately
+  }
+  
+
 };
+
 
 //forgot password
 
@@ -833,9 +897,9 @@ exports.forgot_password = async (req, res) => {
 exports.getWallet = async (req, res) => {
   // const userId = req.session.user_id;
   const userId = req.session.user?._id
-  console.log(userId,"kk");
+  console.log(userId, "kk");
   const user = req.session.user;
- 
+
 
   try {
 
@@ -847,13 +911,13 @@ exports.getWallet = async (req, res) => {
 
       sum += wallet_data[i].balance
 
-     
 
 
-    } 
-    console.log(sum,"wall");
-    
-    res.render('user/wallet',{sum,user})
+
+    }
+    console.log(sum, "wall");
+
+    res.render('user/wallet', { sum, user })
 
   } catch (err) {
     console.log(err);

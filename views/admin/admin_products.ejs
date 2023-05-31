@@ -1,7 +1,10 @@
 <%- include ('../partials/admin_header')%>
   <%- include ('../admin/nav', { currentPage: 'products' }) %>
 
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+  
 
     <div class="row tm-content-row m-2 mt-5">
       <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
@@ -10,7 +13,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div class="tm-product-search">
               <form class="tm-search-form" action="/search_product" method="post">
-                <div class="input-group">
+                <!-- <div class="input-group">
                   <input type="text" name="search" class="form-control tm-search-input"
                     placeholder="Search products...">
                   <div class="input-group-append">
@@ -18,17 +21,19 @@
                       <i class="fas fa-search"></i>
                     </button>
                   </div>
-                </div>
+                </div> -->
               </form>
             </div>
 
-            <a href="/admin_products" class="btn btn-primary mt-10">Show All Products</a>
+            <a href="/admin_products" class="btn btn-primary mt-10" style="margin-right: 90%;">Show All Products</a>
           </div>
 
 
 
           <div class="tm-product-table-container mt-5">
-            <table class="table table-hover tm-table-small tm-product-table">
+            <table id="productTable" class="table table-hover tm-table-small tm-product-table">
+            
+           
               <thead>
                 <tr>
                   <th scope="col">Serial</th>
@@ -170,6 +175,22 @@
       }
 
     </script>
+
+
+
+
+<script>
+  $(document).ready(function() {
+    $('#productTable').DataTable({
+      responsive: true,
+      dom: 'Bfrtip',
+      buttons: ['excel', 'pdf'], // Remove 'copy' button
+    });
+  });
+</script>
+
+
+
 
 <!-- 
 <style>

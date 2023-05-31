@@ -57,37 +57,43 @@
                            <div class="block">
                               <h2 class="section-title">Payment Methods</h2>
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment" id="paypal"
-                                    value="paypal">
-                                 <label class="payment-method-label" for="credit-card">
-                                    paypal
-                                 </label>
+                                 <input class="payment-method-input" type="radio" name="payment" id="paypal" value="paypal">
+                                 <label class="payment-method-label" for="paypal">paypal</label>
                               </div>
-
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment" id="Razorpay"
-                                    value="Razorpay">
-                                 <label class="payment-method-label" for="Razorpay">
-                                    Razorpay
-                                 </label>
+                                 <input class="payment-method-input" type="radio" name="payment" id="Razorpay" value="Razorpay">
+                                 <label class="payment-method-label" for="Razorpay">Razorpay</label>
                               </div>
-
-                              <!-- <button id="rzp-button1" onclick="">Pay with Razorpay</button> -->
-
-
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment" id="cash-on-delivery"
-                                    value="COD">
-                                 <label class="payment-method-label" for="cash-on-delivery">
-                                    Cash on Delivery
-                                 </label>
+                                 <input class="payment-method-input" type="radio" name="payment" id="cash-on-delivery" value="COD">
+                                 <label class="payment-method-label" for="cash-on-delivery">Cash on Delivery</label>
                               </div>
-
                               <button type="submit" class="btn btn-main mt-20">Place Order</button>
                            </div>
+                           
                         </form>
                      </div>
+                     <style>
+                        .block {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+}
 
+.payment-method {
+   display: flex;
+   align-items: center;
+}
+
+.payment-method-label {
+   margin-left: 5px;
+}
+
+.btn-main {
+   margin-top: 20px;
+}
+
+                     </style>
 
                   </div>
 
@@ -140,7 +146,8 @@
                                           </div>
                                           <div id="couponMessage" style="padding-bottom: 10px; color: darkred;"></div>
 
-                                 
+                                          <div id="couponMessage1" style="padding-bottom: 10px; color: rgb(7, 126, 13);"></div>
+
                                           <button type="button" onclick="redeem()" class="btn btn-primary ml-auto" style="margin-bottom: 30px;">Redeem</button>
                                        </form>
                                     </div>
@@ -161,7 +168,7 @@
                                     </li>
                                  </ul>
                                  <div class="summary-total">
-                                    <span>Total</span>
+                                    <span >Total&nbsp;&nbsp; ₹</span>
                                     <span id="totalprice" name="total"></span>
 
                                  </div>
@@ -221,7 +228,9 @@
          }
       </style>
 
-
+<script>
+   
+</script>
 
       <script>
 
@@ -268,35 +277,30 @@ function redeem() {
       });
    }
    
-   
-function handleCouponResponse(response) {
-   var couponMessage = document.getElementById('couponMessage');
-   var couponCodeInput = document.getElementById('couponCode');
-   var totalElement = document.getElementById('totalprice');
+   function handleCouponResponse(response) {
+  var couponMessage = document.getElementById('couponMessage');
+  var couponCodeInput = document.getElementById('couponCode');
+  var totalElement = document.getElementById('totalprice');
 
-  
+  if (couponCodeInput.value.trim() === '') {
+    // Clear the message if the coupon code input is empty
+    couponMessage.textContent = '';
+    return;
+  }
 
-   if (couponCodeInput.value.trim() === '') {
-      // Clear the message if the coupon code input is empty
-      couponMessage.textContent = '';
-      return;
-   }
-
-   if (response.success) {
-      // Coupon is available, update the message and subtract the coupon value from the total
-      var couponValue = response.amount;
-      console.log("aa",couponValue); // Assuming the coupon object has a "value" property
-      var total = parseFloat(totalElement.textContent);
-      
-      var updatedTotal = total - couponValue;
-      console.log(updatedTotal);
-      totalElement.textContent = updatedTotal.toFixed(2); // Update the total with 2 decimal places
-      couponMessage.textContent = 'Coupon redeemed successfully.';
-   } else {
-      // Coupon is not available or there was an error
-      couponMessage.textContent = 'Coupon not valid or an error occurred.';
-   }
+  if (response.success) {
+    // Coupon is available, update the message and subtract the coupon value from the total
+    var couponValue = response.amount;
+    var total = parseFloat(totalElement.textContent);
+    var updatedTotal = total - couponValue;
+    totalElement.textContent = updatedTotal.toFixed(2); // Update the total with 2 decimal places
+    couponMessage1.textContent = response.message; // Display the success message from the response
+  } else {
+    // Coupon is not available or there was an error
+    couponMessage.textContent = response.message; // Display the error message from the response
+  }
 }
+
 
 
 </script>

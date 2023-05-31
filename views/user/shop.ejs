@@ -19,8 +19,21 @@
 		</section>
 
 
-		<section class="products section">
+		<section class="products section" style="margin-bottom: 80%;">
 			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<ul class="category-list">
+							<% category.forEach(function(category) { %>
+							<li>
+								<a href="/filter_category/<%= category._id %>">
+									<span class="span"><%= category.category %></span>
+								</a>
+							</li>
+							<% }); %>
+						</ul>
+					</div>
+				</div>
 				<div class="row">
 					<% product.forEach(function(product) { if (!product.Blocked) { %>
 						<div class="col-md-4">
@@ -28,9 +41,10 @@
 								<div class="product-thumb">
 									<span class="bage">Sale</span>
 									<a href="/single_pro/<%= product._id %>">
-										<img class="img-responsive" src="<%= product.photo[0] %>" alt="product-img" />
+										<img class="img-responsive" src="/<%= product.photo[0] %>" alt="product-img" />
 									</a>
 									<div class="preview-meta">
+										
 										<ul>
 											<li>
 												<span data-toggle="modal" data-target="#product-modal">
@@ -95,6 +109,41 @@ $('.add-to-cart-btn').on('click', function(event) {
   });
 });
 	</script>
+
+
+<style>
+	.category-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 30px;
+	}
+
+	.category-list li {
+		margin-right: 15px;
+	}
+
+	.category-list a {
+		text-decoration: none;
+		color: #333;
+		font-weight: bold;
+	}
+
+	.category-list a:hover {
+		color: #020202;
+	}
+
+	.category-list .span {
+		
+		color: #020202;
+		padding: 5px 10px;
+		border-radius: 4px;
+	}
+</style>
+
 
 
 	

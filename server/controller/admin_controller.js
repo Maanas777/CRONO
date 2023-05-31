@@ -585,28 +585,44 @@ exports.block_product = async (req, res) => {
 
   
 
- 
+  exports.userRefund = async (req, res) => {
+    const { id } = req.params;
   
-exports.userRefund=async(req,res)=>{
-
-  const {id} =req.params
-  console.log(id);
-
-
-  const orders = await orderSchema.findById(id).populate({path:"items.product"})
-
-
-  const wallet=new walletSchema({
-    userId:orders.user,
-    orderId:orders._id,
-    balance:orders.total,
-    transactions:orders.payment_method
-  })
+    try {
+      const order = await orderSchema.findById(id).populate({ path: "items.product" });
+      console.log(order.payment_method);
   
-
-await wallet.save()
-
-await orderSchema.updateOne({ _id: id }, { $set: { status: 'Refunded Amount' } });
-
-res.redirect('/admin_order');
-}
+      if (!order) {
+        return res.status(404).send({ message: "Order not found" });
+      }
+  
+      const wallet = await walletSchema.findOne({ userId: order.user });
+  
+      if (wallet) {
+        // User's wallet already exists, update the balance
+        wallet.balance += order.total;
+       
+        wallet.transactions.push(order.payment_method);
+        console.log(wallet,"hdh");
+  
+        await wallet.save();
+      } else {
+        // User's wallet does not exist, create a new wallet
+        const newWallet = new walletSchema({
+          userId: order.user,
+          orderId: order._id,
+          balance: order.total,
+          transactions:[order.payment_method]
+        });
+  
+        await newWallet.save();
+      }
+  
+      await orderSchema.updateOne({ _id: id }, { $set: { status: 'Refunded Amount' } });
+  
+      res.redirect('/admin_order');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  };

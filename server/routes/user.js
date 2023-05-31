@@ -16,7 +16,7 @@ const isLoggedIn=(req,res,next)=>{
     if(req.session.user){
         next()
     }else{
-        res.redirect('/')
+        res.redirect('/login')
     }
 }
 
@@ -73,10 +73,11 @@ router.post('/login',controller.find_user)
 router.get('/logout',controller.logout)
 
 router.get('/products',controller.show_product)
+router.get('/filter_category/:id',controller.filter_category)
 router.get('/single_pro/:id',controller.single_products)
 
-router.get('/addcart/:id',isUserBlocked,controller.addtocart)
-router.get('/cart',isUserBlocked,controller.getCart)
+router.get('/addcart/:id',isLoggedIn,isUserBlocked,controller.addtocart)
+router.get('/cart',isLoggedIn,isUserBlocked,controller.getCart)
 router.post('/increase_product',isUserBlocked,controller.increase_product)
 router.post('/decreaseQuantity',isUserBlocked,controller.decreaseQuantity)
 router.get('/productRemove/:id',isUserBlocked,controller.remove_product)

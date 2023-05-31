@@ -1,56 +1,69 @@
 <%- include ('../partials/admin_header')%>
-<%- include ('../admin/nav', { currentPage: 'accounts' }) %>
+  <%- include ('../admin/nav', { currentPage: 'accounts' }) %>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
 
 
-<div class="row tm-content-row m-2 mt-3">
-  <div class="col-sm-12 col-md-12 col-lg-8 col-xl-12 tm-block-col">
-    <div class="tm-bg-primary tm-block tm-block-products">
-      <div class="tm-product-table-container">
-        <div class="row mb-3">
-          <div class="col-sm-12 col-md-6">
-            
+    <div class="row tm-content-row m-2 mt-3">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xl-12 tm-block-col">
+        <div class="tm-bg-primary tm-block tm-block-products">
+          <div class="tm-product-table-container">
+            <div class="row mb-3">
+              <div class="col-sm-12 col-md-6">
+
+              </div>
+              <div class="col-sm-12 col-md-6">
+
+              </div>
+            </div>
+            <table id="productTable" class="table table-hover tm-table-small tm-product-table">
+              <thead>
+                <tr>
+                  <th scope="col">Serial</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Mobile</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% user_data.forEach(function(user,index){ %>
+                  <tr>
+                    <td>
+                      <%= index+1 %>
+                    </td>
+                    <td>
+                      <%= user.name %>
+                    </td>
+                    <td>
+                      <%= user.phone %>
+                    </td>
+                    <td>
+                      <%= user.email %>
+                    </td>
+                    <td>
+                      <% if (user.isBlocked) { %>
+                        <a href="/unblock_user/<%= user._id %>" class="btn btn-success btn-sm border-shadow update"
+                          onclick="confirmBlockUser(event)">Unblock</a>
+                        <% } else { %>
+                          <a href="/block_user/<%= user._id %>" class="btn btn-danger btn-sm border-shadow update"
+                            onclick="confirmUnBlockUser(event)">Block</a>
+                          <% } %>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
           </div>
-          <div class="col-sm-12 col-md-6">
-           
-          </div>
+          <!-- table container -->
         </div>
-        <table class="table table-hover tm-table-small tm-product-table">
-          <thead>
-            <tr>
-              <th scope="col">Serial</th>
-              <th scope="col">Name</th>
-              <th scope="col">Mobile</th>
-              <th scope="col">Email</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% user_data.forEach(function(user,index){ %>
-            <tr>
-              <td><%= index+1 %></td>
-              <td><%= user.name %></td>
-              <td><%= user.phone %></td>
-              <td><%= user.email %></td>
-              <td>
-                <% if (user.isBlocked) { %>
-                  <a href="/unblock_user/<%= user._id %>" class="btn btn-success btn-sm border-shadow update"
-                    onclick="confirmBlockUser(event)">Unblock</a>
-                <% } else { %>
-                  <a href="/block_user/<%= user._id %>" class="btn btn-danger btn-sm border-shadow update" onclick="confirmUnBlockUser(event)">Block</a>
-                <% } %>
-              </td>
-            </tr>
-            <% }) %>
-          </tbody>
-        </table>
       </div>
-      <!-- table container -->
     </div>
-  </div>
-</div>
 
-<script>
- function confirmBlockUser(event) {
+    <script>
+      function confirmBlockUser(event) {
         event.preventDefault(); // Prevent the link from immediately navigating
         swal({
           title: "Do you really want to Un-block the person ?",
@@ -59,16 +72,16 @@
             cancel: "No",
             confirm: "Yes"
           },
-        }).then(function(confirmed){
-          if(confirmed){
+        }).then(function (confirmed) {
+          if (confirmed) {
             window.location.href = event.target.getAttribute("href"); // Navigate to the block_pdt URL
           }
-        
+
         })
-       
-        
-        }
-      
+
+
+      }
+
 
       function confirmUnBlockUser(event) {
         event.preventDefault(); // Prevent the link from immediately navigating
@@ -79,19 +92,30 @@
             cancel: "No",
             confirm: "Yes"
           },
-        }).then(function(cofirmed){
-          if(cofirmed){
+        }).then(function (cofirmed) {
+          if (cofirmed) {
             window.location.href = event.target.getAttribute("href"); // Navigate to the block_pdt URL
           }
         })
-     
-          // User clicked "OK" in the confirmation dialog
-         
-        }
-      
+
+        // User clicked "OK" in the confirmation dialog
+
+      }
 
 
-</script>
+
+    </script>
 
 
-<%- include ('../partials/admin_footer')%>
+
+    <script>
+      $(document).ready(function () {
+        $('#productTable').DataTable({
+          responsive: true,
+          dom: 'Bfrtip',
+          buttons: ['excel', 'pdf'], // Remove 'copy' button
+        });
+      });
+    </script>
+
+    <%- include ('../partials/admin_footer')%>

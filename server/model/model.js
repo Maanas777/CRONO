@@ -29,6 +29,7 @@ var usersSchema=new mongoose.Schema({
        
        
     },
+coupon:[String],
 
     address:[{
         name:String,

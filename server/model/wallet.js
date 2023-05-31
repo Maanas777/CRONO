@@ -16,10 +16,10 @@ const walletSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    transactions: {
+    transactions: [{
       type:String,
       required:true
-    }
+    }]
 })
 
 module.exports = mongoose.model('wallet', walletSchema);
