@@ -20,6 +20,11 @@ const isLoggedIn=(req,res,next)=>{
     }
 }
 
+
+
+
+
+
 const isUserBlocked=async(req,res,next)=>{
     const userId=req.session.user?._id
     const user= await userSchema.findById(userId)

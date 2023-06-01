@@ -25,8 +25,7 @@ const orderSchema = new mongoose.Schema({
   }],
   total: {
     type: Number,
-    required: true,
-    min: 0
+    
   },
   status: {
     type: String,

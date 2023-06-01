@@ -121,7 +121,7 @@ exports.logout = (req, res) => {
 };
 
 exports.show_product = async (req, res) => {
-  const product = await productSchema.find().limit(6);
+  const product = await productSchema.find()
 
   const category=await categorySchema.find()
   console.log("aa",category);
@@ -554,10 +554,16 @@ exports.orderConfirmation = async (req, res) => {
 
       console.log(items);
 
+      
+
       let totalPrice = 0;
       items.forEach((item) => {
-        totalPrice += (item.price * item.quantity)-discount;
+        totalPrice += (item.price * item.quantity)
       });
+
+      if (discount) {
+        totalPrice -= discount;
+      }
 
       if (req.query.couponValue) {
         const couponValue = parseFloat(req.query.couponValue);
@@ -817,7 +823,7 @@ console.log("Cart not found");
     }
   
     cart.total = amount;
-    console.log(cart.total,"---");
+
     await cart.save();
 
   } catch (error) {
