@@ -1,5 +1,5 @@
 
-require("dotenv").config()
+ 
 const express = require('express');
 const app = express();
 const nocache=require('nocache')
@@ -10,7 +10,7 @@ const userRouter=require('./server/routes/user')
 const adminRouter=require('./server/routes/admin')
 const  connection=require('./server/connection/connection')
 const Swal = require('sweetalert2');
-const cors=require('cors')
+
 
 const paypal=require('paypal-rest-sdk')
 
@@ -26,7 +26,7 @@ const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 app.use(express.static(path.join(__dirname,'public')))
 
 app.use(express.static("uploads"));
-app.use(cors())
+
 
 app.use(session({
     

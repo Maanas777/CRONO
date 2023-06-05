@@ -145,11 +145,9 @@ exports.filter_category=async(req,res)=>{
   catch(error){
     console.log(error);
     res.status(500).send({error:"internal server error"})
-  }
+ }
 
 }
-
-
 
 
 
@@ -261,10 +259,12 @@ exports.getCart = async (req, res) => {
 
 exports.addtocart = async (req, res) => {
   let user = req.session.user
+  
   if (user) {
     try {
       const userId = req.session.user?._id;
       const productId = req.params.id;
+      console.log(productId,"productId");
 
       let userCart = await cartSchema.findOne({ userId: userId });
 
@@ -481,14 +481,22 @@ exports.checkout = async (req, res) => {
       { address: { $elemMatch: { _id: id } } })
 
     // console.log(address);
-
+    const couponNames = await couponSchema.aggregate([
+      { $project: { _id: 0, code: 1 } },
+      { $group: { _id: null, code: { $push: "$code" } } },
+      { $project: { _id: 0, code: 1 } }
+    ]);
+    
+    const namesArray = couponNames.length > 0 ? couponNames[0].code : [];
+    
+    console.log(namesArray);
     let cart = await cartSchema.findOne({ userId: user }).populate(
       "products.productId"
     )
     if (user) {
       const address = user.address[0];
 
-      res.render('user/check_out', { user, cart, address })
+      res.render('user/check_out', { user, cart, address,namesArray })
     }
     else {
       res.status(404).send('Address not found');
@@ -646,6 +654,7 @@ exports.orderConfirmation = async (req, res) => {
             }
           }
         });
+
         await cartSchema.deleteOne({ userId: userId });
 
       }
@@ -722,6 +731,8 @@ exports.cancel_product = async (req, res) => {
 
   let id = req.params.id
 
+ 
+
   const cancel_product = await orderSchema.findByIdAndUpdate(id,
     {
       status: 'Cancelled'
@@ -738,6 +749,8 @@ exports.cancel_product = async (req, res) => {
     res.send("error");
   }
 }
+
+
 
 exports.return_product = async (req, res) => {
   let id = req.params.id
@@ -900,32 +913,21 @@ exports.forgot_password = async (req, res) => {
   }
 }
 
-exports.getWallet = async (req, res) => {
-  // const userId = req.session.user_id;
-  const userId = req.session.user?._id
-  console.log(userId, "kk");
+exports.Wallet = async (req, res) => {
+  const userId = req.session.user?._id;
   const user = req.session.user;
 
-
   try {
+    const orderdetails = await orderSchema.find({ status: "Refunded Amount" }).populate('items.product');
+     console.log(orderdetails,"///////////")
 
-    let sum = 0
-
+  
     const wallet_data = await walletSchema.find({ userId: userId });
-    console.log(wallet_data);
-    for (let i = 0; i < wallet_data.length; i++) {
-
-      sum += wallet_data[i].balance
 
 
-
-
-    }
-    console.log(sum, "wall");
-
-    res.render('user/wallet', { sum, user })
-
+    res.render('user/wallet', {  user, orderdetails, wallet_data });
   } catch (err) {
     console.log(err);
   }
-}
+};
+

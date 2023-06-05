@@ -7,11 +7,11 @@ const walletSchema = new mongoose.Schema({
         ref: 'new_users',
         required: true
     },
-    orderId:{
+    orderId:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order',
 
-    },
+    }],
     balance: {
         type: Number,
         required: true

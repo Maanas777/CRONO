@@ -45,7 +45,10 @@ const orderSchema = new mongoose.Schema({
   address:{
     type:Object, 
     required: true
-  }
+  },
+
+
+
 });
 
 const Order = mongoose.model('Order', orderSchema);

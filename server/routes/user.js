@@ -14,9 +14,14 @@ const isLogged=(req,res,next)=>{
 }
 const isLoggedIn=(req,res,next)=>{
     if(req.session.user){
+       
         next()
-    }else{
+
+    }
+    else{
+        console.log("haiii");
         res.redirect('/login')
+        
     }
 }
 
@@ -28,7 +33,6 @@ const isLoggedIn=(req,res,next)=>{
 const isUserBlocked=async(req,res,next)=>{
     const userId=req.session.user?._id
     const user= await userSchema.findById(userId)
-console.log(user,"909");
     if(user.isBlocked){
         req.session.save(() => {
             req.session.user=false
@@ -60,7 +64,8 @@ router.get('/login',(req,res)=>{
 )
 
 router.get('/signup',(req,res)=>{
-   res.render('user/signup')
+    let user=req.session.user
+   res.render('user/signup',{user})
 } 
 )
 router.get('/otp',(req,res)=>{
@@ -111,7 +116,9 @@ router.get('/paypal-success',controller.paypal_err)
 router.post('/redeem_coupon',controller.redeem_coupon)
 
 //wallet
-router.get('/wallet_page',isLoggedIn,controller.getWallet)
+router.get('/wallet_page',isLoggedIn,controller.Wallet)
+
+
 
 
 

@@ -78,10 +78,11 @@
 
                             <% var total=product.quantity * product.productId.price; %>
 
-                            <h5 id="product-total-price-<%= product.productId._id %>" class="item-total"  >  
+                           <h5 id="product-total-price-<%= product.productId._id %>" class="item-total"  >  
                               
                                  <%= total %>
                               </h5>
+                              
                           </td>
                           <td>
                             <a class="product-remove" href="/productRemove/<%=  product.productId._id %>"  data-product-id="<%= product.productId._id %>" >Remove</a>

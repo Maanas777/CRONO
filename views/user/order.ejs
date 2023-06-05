@@ -1,6 +1,17 @@
 <%- include ('../partials/user-Header')%>
     <%- include ('../partials/user_nav')%>
 
+
+    <!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css">
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+
         <section class="page-header">
             <div class="container">
                 <div class="row">
@@ -54,7 +65,7 @@
 
 
                                                 <td>
-                                                   $   <%= order.total %>
+                                                    $ <%= order.total %>
                                                 </td>
 
                                                 <td>
@@ -80,18 +91,24 @@
                                                     <%= order.status %>
                                                 </td>
                                                 <td>
-                                                    <% if (order.status !== "Cancelled" && order.status !=="Delivered"&&order.status !=="Returned"&&order.status !=="Refunded Amount") { %>
-                                                        <a class="btn btn-sm btn-primary" href="/cancel_product/<%= order._id %>" onclick="return confirm('Are you sure?')">Cancel</a>
-                                                   
-                                                        <% }  %>
 
-                                                        <%   if (order.status === "Delivered") { %>
-                                                            <a class="btn btn-sm btn-primary" href="/return_product/<%= order._id %>" onclick="return confirm('Are you sure?')">Return</a>
-                                                    <% } %>
+                                                    <% if (order.status !=="Cancelled" && order.status !=="Delivered" &&
+                                                        order.status !=="Returned" && order.status !=="Refunded Amount"
+                                                        ) { %>
+                                                        <a class="btn btn-sm btn-primary" data-toggle="modal"
+                                                            data-target="#edit_coupon<%= order._id %>"
+                                                            href="/cancel_product/<%= order._id %>">Cancel</a>
+                                                        <% } %>
 
-                                                   
+                                                            <% if (order.status==="Delivered" ) { %>
+                                                                <a class="btn btn-sm btn-primary"
+                                                                    href="/return_product/<%= order._id %>"
+                                                                    onclick="return confirm('Are you sure?')">Return</a>
+                                                                <% } %>
+
+
                                                 </td>
-                                                
+
 
 
                                                 <!-- <td><span class="label label-primary">Processing</span></td>
@@ -107,51 +124,33 @@
                 </div>
             </div>
         </section>
-        <footer class="footer section text-center">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <ul class="social-media">
-                            <li>
-                                <a href="https://www.facebook.com/themefisher">
-                                    <i class="tf-ion-social-facebook"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://www.instagram.com/themefisher">
-                                    <i class="tf-ion-social-instagram"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://www.twitter.com/themefisher">
-                                    <i class="tf-ion-social-twitter"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://www.pinterest.com/themefisher/">
-                                    <i class="tf-ion-social-pinterest"></i>
-                                </a>
-                            </li>
-                        </ul>
-                        <ul class="footer-menu text-uppercase">
-                            <li>
-                                <a href="contact.html">CONTACT</a>
-                            </li>
-                            <li>
-                                <a href="shop.html">SHOP</a>
-                            </li>
-                            <li>
-                                <a href="pricing.html">Pricing</a>
-                            </li>
-                            <li>
-                                <a href="contact.html">PRIVACY POLICY</a>
-                            </li>
-                        </ul>
-                        <p class="copyright-text">Copyright &copy;2021, Designed &amp; Developed by <a
-                                href="https://themefisher.com/">Themefisher</a></p>
+
+        //modal
+
+        <div class="modal fade" id="edit_coupon<%= order._id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div class="row tm-edit-product-row">
+                    <div class="col-xl-6 col-lg-6 col-md-12">
+                      <form action="/edit_coupon" method="POST" class="tm-edit-product-form">
+                        <div class="form-group mb-3 custom-width">
+                          <!-- This is a modal content -->
+                        </div>
+                      </form>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </footer>
+          </div>
+
+
+
+
+
+
+
+
 
         <%- include ('../partials/user-Footer')%>

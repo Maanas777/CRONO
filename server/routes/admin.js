@@ -6,27 +6,7 @@ const fs=require('fs')
 const category=require('../model/add_category')
 const path=require('path')
 
-// Configure multer middleware
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     // Make sure directory exists
-//     const uploadDir = './uploads';
-//     if (!fs.existsSync(uploadDir)) {
-//       fs.mkdirSync(uploadDir);
-//     }
-//     cb(null, uploadDir);
-//   },
-//   filename: function (req, file, cb) {
-//     // Remove spaces and special characters from original filename
-//     const originalname = file.originalname.replace(/[^a-zA-Z0-9]/g, "");
-//     // Set filename to fieldname + current date + original filename
-//     cb(null, `${file.fieldname}_${Date.now()}_${originalname}`);
-//   },
-// });
 
-// const upload = multer({
-//   storage: storage,
-// });
 
 
 
@@ -56,9 +36,6 @@ router.get('/admin',(req,res)=>{
     res.render('admin/login')
 })
 
-router.get('/admin_index',(req,res)=>{
-    res.render('admin/admin_index')
-})
 
 // router.get('/products',((req,res)=>{
 //     res.render('admin/products')
@@ -77,6 +54,7 @@ router.get('/users',(req,res)=>{
   res.render('admin/show_user')
 })
 
+router.get('/admin_index',admincontoller.dashboard)
 
 router.post("/admin",admincontoller.adminlogin);
 router.post('/add_product',upload,admincontoller.addProduct);

@@ -32,7 +32,7 @@
 
           <div class="tm-product-table-container mt-5">
             <table id="productTable" class="table table-hover tm-table-small tm-product-table">
-            
+          
            
               <thead>
                 <tr>
@@ -97,7 +97,15 @@
         <div class="tm-bg-primary tm-block tm-block-product-categories">
           <h2 class="tm-block-title">Product Categories</h2>
           <div class="tm-product-table-container">
-            <table class="table tm-table-small tm-product-table">
+            <table id="categoryTable" class="table tm-table-small tm-product-table">
+              
+              <thead>
+                <tr>
+                  <th scope="col">Sl No</th>
+                  <th scope="col">Brand</th>
+                  <th scope="col">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions</th>
+                </tr>
+              </thead>
               <tbody>
                 <% category_find.forEach(function(category,index) { %>
                   <tr>
@@ -136,8 +144,13 @@
     </footer>
 
 
+
+    
+
+
     <script>
-     function confirmBlock(event) {
+
+function confirmBlock(event) {
   event.preventDefault(); // Prevent the link from immediately navigating
 
   swal({
@@ -147,13 +160,19 @@
       cancel: "Cancel",
       confirm: "OK"
     },
-
-  }).then((confirmed) => {
-    if (confirmed) {
-      window.location.href = event.target.href; // Navigate to the block_pdt URL
+  }).then((ok) => {
+    if (ok) {
+      swal({
+        title: "Product blocked successfully!",
+        icon: "success",
+      }).then(() => {
+        window.location.href = event.target.href; // Navigate to the block_pdt URL
+      });
     }
   });
 }
+
+
 
 
       function confirmUnblock(event) {
@@ -167,51 +186,40 @@
           },
         }).then(function (confirmed) {
           if (confirmed) {
-            // User clicked "OK" in the SweetAlert dialog
-            window.location.href = event.target.getAttribute("href"); // Navigate to the block_pdt URL
-          }
+      swal({
+        title: "Product Unblocked successfully!",
+        icon: "success",
+      }).then(() => {
+        window.location.href = event.target.href; // Navigate to the block_pdt URL
+      });
+    }
         });
 
       }
 
     </script>
+  
 
 
 
 
-<script>
-  $(document).ready(function() {
-    $('#productTable').DataTable({
-      responsive: true,
-      dom: 'Bfrtip',
-      buttons: ['excel', 'pdf'], // Remove 'copy' button
+  <script>
+    $(document).ready(function() {
+      $('#productTable').DataTable({
+        columnDefs: [
+          { orderable: false, targets: 0 },
+          { orderable: false, targets: 2 }
+        ]
+      });
+  
+      $('#categoryTable').DataTable({
+        columnDefs: [
+          { orderable: false, targets: 0 }
+        ]
+      });
     });
-  });
-</script>
+  </script>
 
-
-
-
-<!-- 
-<style>
-  .custom-swal-popup {
-    width: 300px; /* Adjust the width as per your preference */
-  }
-
-  .custom-swal-title {
-    font-size: 18px; /* Adjust the font size as per your preference */
-  }
-
-  .custom-swal-content {
-    font-size: 16px; /* Adjust the font size as per your preference */
-  }
-
-  .custom-swal-confirm,
-  .custom-swal-cancel {
-    padding: 8px 16px; /* Adjust the padding as per your preference */
-    font-size: 14px; /* Adjust the font size as per your preference */
-  }
-</style> -->
 
     
     <style>

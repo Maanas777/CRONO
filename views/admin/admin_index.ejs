@@ -1,207 +1,217 @@
-
 <%- include ('../partials/admin_header')%>
 
-<body id="reportsPage">
-    <div class="" id="home">
-    
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <%- include ('../admin/nav', { currentPage: 'dashboard' }) %>
+    <body id="reportsPage">
+        <div class="" id="home">
 
-                </div>
-            </div>
-           
-            <!-- row -->
-            <div class="row tm-content-row">
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block">
-                        <h2 class="tm-block-title">Latest Hits</h2>
-                        <canvas id="lineChart"></canvas>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block">
-                        <h2 class="tm-block-title">Performance</h2>
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block tm-block-taller">
-                        <h2 class="tm-block-title">Storage Information</h2>
-                        <div id="pieChartContainer">
-                            <canvas id="pieChart" class="chartjs-render-monitor" width="900" height="100"></canvas>
-                        </div>                        
-                    </div>
-                </div> 
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <%- include ('../admin/nav', { currentPage: 'dashboard' }) %>
 
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4" , style="margin-top:5%">
+                        <div class="card tm-bg-primary-dark text-white">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Today sales</p>
+                                            <h5 class="font-weight-bolder"> <%= todaySales %></h5>
+                                            <p class="mb-0">
+                                                <span class="text-success text-sm font-weight-bolder">Good</span> last
+                                                month
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div
+                                            class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                            <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4" , style="margin-top:5%">
+                        <div class="card tm-bg-primary-dark text-white">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Users</p>
+                                            <h5 class="font-weight-bolder"> <%= total_users %></h5>
+                                            <p class="mb-0">
+                                                <span class="text-success text-sm font-weight-bolder">Good</span> last
+                                                month
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div
+                                            class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                            <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4" , style="margin-top:5%">
+                        <div class="card tm-bg-primary-dark text-white">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Orders</p>
+                                            <h5 class="font-weight-bolder"> <%= total_orders %></h5>
+                                            <p class="mb-0">
+                                                <span class="text-success text-sm font-weight-bolder">Good</span> last
+                                                month
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div
+                                            class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                            <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4" , style="margin-top:5%">
+                        <div class="card tm-bg-primary-dark text-white">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Sale</p>
+                                            <h5 class="font-weight-bolder"><%= totalSale %></h5>
+                                            <p class="mb-0">
+                                                <span class="text-success text-sm font-weight-bolder">Good</span> last
+                                                month
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div
+                                            class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                            <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
-                <div class="col-12 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
-                        <h2 class="tm-block-title">Orders List</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ORDER NO.</th>
-                                    <th scope="col">STATUS</th>
-                                    <th scope="col">OPERATORS</th>
-                                    <th scope="col">LOCATION</th>
-                                    <th scope="col">DISTANCE</th>
-                                    <th scope="col">START DATE</th>
-                                    <th scope="col">EST DELIVERY DUE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row"><b>#122349</b></th>
-                                    <td>
-                                        <div class="tm-status-circle moving">
-                                        </div>Moving
-                                    </td>
-                                    <td><b>Oliver Trag</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>485 km</b></td>
-                                    <td>16:00, 12 NOV 2018</td>
-                                    <td>08:00, 18 NOV 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122348</b></th>
-                                    <td>
-                                        <div class="tm-status-circle pending">
-                                        </div>Pending
-                                    </td>
-                                    <td><b>Jacob Miller</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>360 km</b></td>
-                                    <td>11:00, 10 NOV 2018</td>
-                                    <td>04:00, 14 NOV 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122347</b></th>
-                                    <td>
-                                        <div class="tm-status-circle cancelled">
-                                        </div>Cancelled
-                                    </td>
-                                    <td><b>George Wilson</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>340 km</b></td>
-                                    <td>12:00, 22 NOV 2018</td>
-                                    <td>06:00, 28 NOV 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122346</b></th>
-                                    <td>
-                                        <div class="tm-status-circle moving">
-                                        </div>Moving
-                                    </td>
-                                    <td><b>William Aung</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>218 km</b></td>
-                                    <td>15:00, 10 NOV 2018</td>
-                                    <td>09:00, 14 NOV 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122345</b></th>
-                                    <td>
-                                        <div class="tm-status-circle pending">
-                                        </div>Pending
-                                    </td>
-                                    <td><b>Harry Ryan</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>280 km</b></td>
-                                    <td>15:00, 11 NOV 2018</td>
-                                    <td>09:00, 17 NOV 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122344</b></th>
-                                    <td>
-                                        <div class="tm-status-circle pending">
-                                        </div>Pending
-                                    </td>
-                                    <td><b>Michael Jones</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>218 km</b></td>
-                                    <td>18:00, 12 OCT 2018</td>
-                                    <td>06:00, 18 OCT 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122343</b></th>
-                                    <td>
-                                        <div class="tm-status-circle moving">
-                                        </div>Moving
-                                    </td>
-                                    <td><b>Timmy Davis</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>218 km</b></td>
-                                    <td>12:00, 10 OCT 2018</td>
-                                    <td>08:00, 18 OCT 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122342</b></th>
-                                    <td>
-                                        <div class="tm-status-circle moving">
-                                        </div>Moving
-                                    </td>
-                                    <td><b>Oscar Phyo</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>420 km</b></td>
-                                    <td>15:30, 06 OCT 2018</td>
-                                    <td>09:30, 16 OCT 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122341</b></th>
-                                    <td>
-                                        <div class="tm-status-circle moving">
-                                        </div>Moving
-                                    </td>
-                                    <td><b>Charlie Brown</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>300 km</b></td>
-                                    <td>11:00, 10 OCT 2018</td>
-                                    <td>03:00, 14 OCT 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122340</b></th>
-                                    <td>
-                                        <div class="tm-status-circle cancelled">
-                                        </div>Cancelled
-                                    </td>
-                                    <td><b>Wilson Cookies</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>218 km</b></td>
-                                    <td>17:30, 12 OCT 2018</td>
-                                    <td>08:30, 22 OCT 2018</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><b>#122339</b></th>
-                                    <td>
-                                        <div class="tm-status-circle moving">
-                                        </div>Moving
-                                    </td>
-                                    <td><b>Richard Clamon</b></td>
-                                    <td><b>London, UK</b></td>
-                                    <td><b>150 km</b></td>
-                                    <td>15:00, 12 OCT 2018</td>
-                                    <td>09:20, 26 OCT 2018</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="row tm-content-row" style="margin-top: 10% ;">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 ">
+                        <div class="tm-bg-primary-dark tm-block">
+                            <h2 class="tm-block-title">Latest Hits</h2>
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 tm-block-col" style="width: 50%;height: 600px;">
+                        <div class="tm-bg-primary-dark tm-block">
+                            <h2 class="tm-block-title">Performance</h2>
+                            <canvas id="barchart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <footer class="tm-footer row tm-mt-small">
-            <div class="col-12 font-weight-light">
-                <p class="text-center text-white mb-0 px-4 small">
-                    Copyright &copy; <b>2018</b> All rights reserved. 
-                    
-                    Design: <a rel="nofollow noopener" href="https://templatemo.com" class="tm-footer-link">Template Mo</a>
-                </p>
-            </div>
-        </footer>
-    </div>
-    <%- include ('../partials/admin_footer')%>
+            <span id="delivered" hidden><%= delivered %>  </span>
+            <span id="pending" hidden><%= Pending %>  </span>
+            <span id="refunded" hidden><%= refunded %>  </span>
+            <span id="returned" hidden><%= returned %>  </span>
+            <span id="Cancelled" hidden><%= Cancelled %>  </span>
+
+
+            <footer class="tm-footer row tm-mt-small">
+                <div class="col-12 font-weight-light">
+                    <p class="text-center text-white mb-0 px-4 small">
+                        Copyright &copy; <b>2018</b> All rights reserved.
+
+                        Design: <a rel="nofollow noopener" href="https://templatemo.com" class="tm-footer-link">Template
+                            Mo</a>
+                    </p>
+                </div>
+            </footer>
+
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <script>
+                const delivered=Number(document.getElementById('delivered').innerHTML)
+                const pending=Number(document.getElementById('pending').innerHTML)
+                const refunded=Number(document.getElementById('refunded').innerHTML)
+                const returned=Number(document.getElementById('returned').innerHTML)
+                const Cancelled=Number(document.getElementById('Cancelled').innerHTML)
+                const ctx = document.getElementById('myChart');Number
+                new Chart(ctx,
+                    {
+                        type: 'pie',
+                        data: {
+                            labels: [
+                            'Refunded', 'Delivered', 'Pending','returned','Cancelled'
+                            ],
+                            datasets: [{
+                                label: 'order',
+                                data: [refunded,delivered, pending,returned,Cancelled],
+                                backgroundColor: [
+                    'rgb(176, 32, 32)',    // Refunded - Red color
+                    'rgb(0, 128, 0)',    // Delivered - Blue color
+                    'rgb(255, 205, 86)',    // Pending - Yellow color
+                    'rgb(255, 165, 0)',    // Returned - Teal color
+                    'rgb(255, 140, 0)',    // Cancelled - Orange color
+                    'rgb(135, 206, 235)',   // Shipped - Purple color
+                    'rgb(50, 205, 50)'      // Placed - Green color
+                ],
+                                hoverOffset: 4
+                            }]
+                        }
+                    }
+                )
+            </script>
+
+            <script>
+                const ctz = document.getElementById('barchart');
+
+                new Chart(ctz, {
+                    type: 'bar',
+                    data: {
+                        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                        datasets: [{
+                            label: '',
+                            data: [12, 19, 3, 5, 2, 3],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
+
+
+
+
+
+
+
+
+
+            <%- include ('../partials/admin_footer')%>
