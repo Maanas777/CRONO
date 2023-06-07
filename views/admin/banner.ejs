@@ -1,0 +1,113 @@
+<%- include ('../partials/admin_header')%>
+<%- include ('../admin/nav', { currentPage: 'products' }) %>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+
+<div class="row tm-content-row m-2 mt-5">
+
+    
+  <div class="col-md-12 col-lg-8 col-xl-10 tm-block-col"> <!-- Modified column classes -->
+    <div class="tm-bg-primary tm-block tm-block-products">
+
+      <div class="tm-product-table-container mt-5">
+        
+        <table id="productTable" class="table table-hover tm-table-small tm-product-table">
+          <thead>
+            <tr>
+              <th scope="col">Sl:No</th>
+              <th scope="col">Banner Name</th>
+              <th scope="col">Image</th>
+              <th scope="col">Date</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Banner_data.forEach((element, index) => { %>
+            <tr>
+              <td><%= index+1 %></td>
+              <td><%= element.name %></td>
+              <td>
+                <img class="img-thumbnail" width="100px" src="<%= element.photo[0] %>">
+              </td>
+              <td><%= element.date.toLocaleDateString() %></td>
+              <td>
+                
+                <% if (element.status) { %>
+                  <a href="/deactivateBanner/<%= element._id %>"
+                    class="btn btn-danger btn-sm border-shadow update" onclick="confirmUnblock(event)">
+                    <i class="fa fa-lock" aria-hidden="true"></i> Deactivate
+                  </a>
+                  <% } else { %>
+                    <a href="/activateBanner/<%= element._id %>" class="btn btn-success btn-sm border-shadow update"
+                      onclick="confirmBlock(event)">
+                      <i class="fa fa-lock" aria-hidden="true"></i> Activate
+                    </a>
+                    <% } %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <!-- table container -->
+      <a href="/addBanner" class="btn btn-primary btn-block text-uppercase mb-3">Add Banner</a>
+
+    </div>
+  </div>
+</div>
+<footer class="tm-footer row tm-mt-small">
+  <div class="col-12 font-weight-light">
+    <p class="text-center text-white mb-0 px-4 small">
+    </p>
+  </div>
+</footer>
+
+
+<script>
+
+  function confirmBlock(event) {
+    event.preventDefault(); // Prevent the link from immediately navigating
+
+    swal({
+      title: "Do you really want to Deactivate the Banner?",
+      icon: "warning",
+      buttons: {
+        cancel: "Yes",
+        confirm: "No"
+      },
+    }).then((ok) => {
+      if (ok) {
+        swal({
+          title: "Banner Activated successfully!",
+          icon: "success",
+        }).then(() => {
+          window.location.href = event.target.href; // Navigate to the block_pdt URL
+        });
+      }
+    });
+  }
+
+  function confirmUnblock(event) {
+    event.preventDefault()
+    swal({
+      title: "Do you really want to Activate the Banner?",
+      icon: "warning",
+      buttons: {
+        cancel: "No",
+        confirm: "Yes"
+      },
+    }).then(function (confirmed) {
+      if (confirmed) {
+        swal({
+          title: "Banner Deactivated successfully!",
+          icon: "success",
+        }).then(() => {
+          window.location.href = event.target.href; // Navigate to the block_pdt URL
+        });
+      }
+    });
+  }
+
+  </script>

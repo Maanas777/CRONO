@@ -152,29 +152,40 @@ const setSubtotal=()=>{
 	}
 	setSubtotal();
 
-
-      function incrementQuantity(cartId) {
-        $.ajax({
-          url: "/increase_product",
-          type: "POST",
-          data: { cartId: cartId },
-          success: function (data) {
-            if (data.success) {
-              $(`#product-total-price-${cartId}`).text(data.total)
-              $(`#quantity_${cartId}`).text(data?.quantity)
-              setSubtotal();
-            }
-            else {
-              console.log('error while updating');
-            }
-
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-            // Handle error response here
-            res.send('error')
-          }
-        })
+  function incrementQuantity(cartId) {
+  $.ajax({
+    url: "/increase_product",
+    type: "POST",
+    data: { cartId: cartId },
+    success: function (data) {
+      if (data.success) {
+        $(`#product-total-price-${cartId}`).text(data.total);
+        $(`#quantity_${cartId}`).text(data?.quantity);
+        setSubtotal();
+      } else if (data.success == false) {
+        if (data.maxQuantity) {
+          Toastify({
+            text: "Stock Limit Exceeded",
+            className: "info",
+            style: {
+              background: "red",
+            },
+            position: "center",
+            gravity: "center",
+          }).showToast();
+        }
+        setSubtotal();
+      } else {
+        console.log("error");
       }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      // Handle error response here
+      console.error(errorThrown);
+    },
+  });
+}
+
 
    
       function decrementQuantity(cartItemId) {

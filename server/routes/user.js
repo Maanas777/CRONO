@@ -2,6 +2,7 @@ const express=require('express')
 const router= express.Router()
 const controller=require('../controller/controller')
 const userSchema=require('../model/model')
+const bannerSchema=require('../model/banner')
 // const session=require('express-session')
 
 
@@ -47,12 +48,13 @@ const isUserBlocked=async(req,res,next)=>{
 
 
 
-router.get('/',(req,res)=>{
-    let user=req.session.user
-
-    res.render('user/index',{user:user})
-     
-})
+router.get('/', async (req, res) => {
+    let user = req.session.user;
+    const banner = await bannerSchema.find();
+  
+    res.render('user/index', { user: user ,banner});
+  });
+  
 
 
 
@@ -96,10 +98,13 @@ router.get('/add_adress',isUserBlocked,controller.address)
 router.post('/add_address',isUserBlocked,controller.add_address)
 router.get('/checkout/:id',isLoggedIn,isUserBlocked,controller.checkout)
 
+//order
 router.post('/order/:id',isUserBlocked,controller.orderConfirmation)
 router.get('/order_page',isLoggedIn,isUserBlocked,controller.order_find)
-router.get('/cancel_product/:id',isUserBlocked,controller.cancel_product)
-router.get('/return_product/:id',controller.return_product)
+router.post('/cancel_product/:id',controller.cancel_product)
+router.post('/return_product/:id',controller.return_product)
+router.get('/view_order/:id',controller.view_order)
+router.get('/invoice/:id',controller.invoice)
 
 //forgot password
 router.get('/forgot_otp',controller.otp_page)
@@ -118,7 +123,8 @@ router.post('/redeem_coupon',controller.redeem_coupon)
 //wallet
 router.get('/wallet_page',isLoggedIn,controller.Wallet)
 
-
+//search product
+router.post('/search_product',controller.search_product)
 
 
 

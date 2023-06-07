@@ -2,8 +2,10 @@
 
 <%- include ('../partials/user_nav')%>
 
-<div class="hero-slider">
-  <div class="slider-item th-fullpage hero-area" style="background-image: url(/asset_1/images/slider/slider-1.jpg);">
+
+
+<div class="hero-slider"><% if (!banner.status) { %>
+  <div class="slider-item th-fullpage hero-area" style="background-image: url(<%= banner[1].photo %>)">
     <div class="container">
       <div class="row">
         <div class="col-lg-8 text-center">
@@ -14,6 +16,9 @@
       </div>
     </div>
   </div>
+  <% } %>
+
+
   <div class="slider-item th-fullpage hero-area" style="background-image: url(/asset_1/images/slider/slider-3.jpg);">
     <div class="container">
       <div class="row">

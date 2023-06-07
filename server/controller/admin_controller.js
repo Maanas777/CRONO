@@ -5,9 +5,11 @@ const cartSchema = require('../model/cart_model')
 const productSchema = require('../model/product_model')
 const orderSchema = require('../model/order')
 const couponSchema = require('../model/coupon')
+const bannerSchema= require('../model/banner')
 const walletSchema = require('../model/wallet')
 const multer = require('multer');
 const fs = require("fs");
+const { log } = require("console");
 
 
 exports.
@@ -190,11 +192,12 @@ exports.addProduct = async (req, res) => {
       price: req.body.price,
       details: req.body.details,
       brand: req.body.brand,
+      stock: req.body.stock,
       photo: req.files.map((file) => file.filename)
     });
     console.log(product);
 
-    const data = await product.save();
+     await product.save();
 
     res.redirect('admin_products');
   } catch (err) {
@@ -312,17 +315,21 @@ exports.updateproduct = async (req, res) => {
     const updatedProduct = await productSchema.findByIdAndUpdate(
       id.trim(),
       {
-
         name: req.body.name,
         price: req.body.price,
         details: req.body.details,
         photo: new_images,
-        brand: req.body.brand
+        brand: req.body.brand,
+        stock:req.body.stock,
+      
       },
 
       { new: true }
+   
 
     );
+
+
     if (updatedProduct) {
 
       res.redirect("/admin_products");
@@ -550,6 +557,8 @@ exports.order_find = async (req, res) => {
 }
 
 
+
+
 exports.update_status = async (req, res) => {
 
   try {
@@ -720,3 +729,88 @@ exports.userRefund = async (req, res) => {
     res.status(500).send({ message: 'Internal server error' });
   }
 };
+
+
+exports.Banner=async(req,res)=>{
+    const admin=req.session.admin
+    const Banner_data=await bannerSchema.find().exec()
+    res.render('admin/banner',{admin,Banner_data})
+  }
+  exports.AddBanner=async(req,res)=>{
+    const admin=req.session.admin
+    res.render('admin/addBanner',{admin})
+  }
+  exports.ADDBanner=async(req,res)=>{
+    try {
+      const Banner = new bannerSchema({
+        name: req.body.name,
+        photo: req.files.map((file) => file.filename),
+        date:req.body.date,
+      });
+      console.log(Banner);
+      await Banner.save();
+  
+      const Banner_data=await bannerSchema.find().exec()
+      res.render('admin/banner',{Banner_data})
+    } catch (error) {
+      console.log(error);
+    }
+   
+  }
+
+  exports.activateBanner = async (req, res) => {
+    try {
+      const id = req.params.id;
+      await bannerSchema.findByIdAndUpdate(
+        id,
+        {
+          status: true
+        },
+        { new: true }
+      );
+      res.redirect('/banner');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  exports.deactivatebanner=async(req,res)=>{
+    try {
+      const id = req.params.id;
+      await bannerSchema.findByIdAndUpdate(
+        id,
+        {
+          status: false
+        },
+        { new: true }
+      );
+      res.redirect('/banner');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+
+  
+  
+
+
+
+  exports.SalesReport=async(req,res)=>{
+    const admin=req.session.admin
+    const filteredOrders=await orderSchema.find().populate("user").populate("items.product").populate("address")
+   console.log(filteredOrders,"popopo");
+    res.render("admin/sales_report",{admin,filteredOrders})
+  }
+
+  exports.FilterbyDates=async(req,res)=>{
+    const admin=req.session.admin
+    const FromDate=req.body.fromdate
+    console.log(FromDate);
+    const Todate=req.body.todate
+    console.log(Todate);
+    const filteredOrders=await orderSchema.find({createdAt:{$gte:FromDate,$lte:Todate}}).populate("user").populate("items.product").populate("address")
+   
+    res.render("admin/sales_report",{admin,filteredOrders})
+  }

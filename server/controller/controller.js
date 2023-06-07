@@ -313,7 +313,7 @@ exports.addtocart = async (req, res) => {
 
 // increment quantity 
 
-exports.increase_product = async (req, res) => {
+exports.  increase_product = async (req, res) => {
 
   const userId = req.session.user
   const cartId = req.body.cartId
@@ -330,6 +330,18 @@ exports.increase_product = async (req, res) => {
 
 
     cart.products[cartIndex].quantity += 1
+
+    const products = cart.products[cartIndex].productId;
+    const maxQuantity = products.stock;
+
+    if (cart.products[cartIndex].quantity > maxQuantity) {
+      return res.json({
+        success: false,
+        message: "Maximum quantity reached.",
+        maxQuantity
+      });
+    }
+
     await cart.save()
 
     const total = cart.products[cartIndex].quantity * cart.products[cartIndex].productId.price
@@ -480,23 +492,18 @@ exports.checkout = async (req, res) => {
     let user = await usersSchema.findOne({ _id: userId },
       { address: { $elemMatch: { _id: id } } })
 
-    // console.log(address);
-    const couponNames = await couponSchema.aggregate([
-      { $project: { _id: 0, code: 1 } },
-      { $group: { _id: null, code: { $push: "$code" } } },
-      { $project: { _id: 0, code: 1 } }
-    ]);
+  
     
-    const namesArray = couponNames.length > 0 ? couponNames[0].code : [];
-    
-    console.log(namesArray);
+    const coupon= await couponSchema.find()
+
+
     let cart = await cartSchema.findOne({ userId: user }).populate(
       "products.productId"
     )
     if (user) {
       const address = user.address[0];
 
-      res.render('user/check_out', { user, cart, address,namesArray })
+      res.render('user/check_out', { user, cart, address,coupon })
     }
     else {
       res.status(404).send('Address not found');
@@ -649,13 +656,14 @@ exports.orderConfirmation = async (req, res) => {
           } else {
             for (let i = 0; i < payment.links.length; i++) {
               if (payment.links[i].rel === "approval_url") {
+              
                 res.redirect(payment.links[i].href);
               }
             }
+            
           }
         });
 
-        await cartSchema.deleteOne({ userId: userId });
 
       }
 
@@ -701,6 +709,7 @@ exports.paypal_success = async (req, res) => {
       throw error;
     } else {
 
+    
       console.log(JSON.stringify(payment));
       res.render("user/paypalSuccess", { payment, user, userId, })
     }
@@ -719,19 +728,22 @@ exports.paypal_err = (req, res) => {
 
 exports.order_find = async (req, res) => {
   let user = req.session.user
+  let userId=req.session.user?._id
 
-  const order = await orderSchema.find().populate('user').populate('items.product').populate('address')
+  const order = await orderSchema.find({user:userId}).populate("items.product")
 
   res.render('user/order', { order, user })
 
 }
 
 
+
 exports.cancel_product = async (req, res) => {
 
   let id = req.params.id
 
- 
+  await orderSchema.findByIdAndUpdate(id, { reason: req.body.reason });
+
 
   const cancel_product = await orderSchema.findByIdAndUpdate(id,
     {
@@ -752,8 +764,17 @@ exports.cancel_product = async (req, res) => {
 
 
 
+
+
 exports.return_product = async (req, res) => {
+
   let id = req.params.id
+
+  const reason= new orderSchema({
+    reason:req.body.reason
+  
+  }) 
+
 
   const return_product = await orderSchema.findByIdAndUpdate(id, {
 
@@ -761,6 +782,9 @@ exports.return_product = async (req, res) => {
   },
     { new: true }
   )
+
+  console.log(return_product.status,"8989757");
+
   if (return_product) {
     res.redirect("/order_page");
   }
@@ -770,6 +794,32 @@ exports.return_product = async (req, res) => {
     res.send("error");
   }
 }
+
+exports.view_order=async(req,res)=>{
+  console.log("09080709");
+let id=req.params.id
+let user=req.session.user
+
+const order= await orderSchema.findById({_id:id}).populate("items.product")
+console.log(order,"0576675");
+res.render('user/view_order',{user,order} )
+
+
+}
+
+exports.invoice =async(req,res)=>{
+  let user=req.session.user
+  let id= req.params.id
+  const order= await orderSchema.findById({_id:id}).populate("items.product")
+
+  res.render('user/invoice',{user,order})
+}
+
+
+
+
+
+
 
 
 
@@ -930,4 +980,22 @@ exports.Wallet = async (req, res) => {
     console.log(err);
   }
 };
+
+
+
+exports.search_product = async (req, res) => {
+  let user=req.session.user
+  const search = req.body.search;
+  try {
+    const regex = new RegExp(search, 'i');
+    const product = await productSchema.find({ name: regex });
+    const category = await categorySchema.find().exec();
+
+    res.render('user/shop', { product, category,user })
+  } catch (err) {
+    console.log(err);
+  }
+
+};
+
 

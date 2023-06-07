@@ -7,7 +7,21 @@ const category=require('../model/add_category')
 const path=require('path')
 
 
+const isLogged=(req,res,next)=>{
+  if(req.session.admin){
+      res.redirect('/admin_index')
+  }else{
+      next()
+  }
+}
 
+const adminLoggedIn=(req,res,next)=>{
+  if(req.session.admin){
+      next()
+  }else{
+      res.redirect('/admin_login')
+  }
+}
 
 
 var storage = multer.diskStorage({
@@ -92,6 +106,17 @@ router.post('/edit_coupon/:id',admincontoller.edit_coupon)
 //wallet
 router.get('/userRefund/:id',admincontoller.userRefund)
 
+//bannner
+router.get('/banner',admincontoller.Banner)
+router.get('/addBanner',admincontoller.AddBanner)
+router.post('/addBanner',upload,admincontoller.ADDBanner)
+router.get('/activateBanner/:id',admincontoller.activateBanner)
+router.get('/deactivateBanner/:id',admincontoller.deactivatebanner)
+
+
+//sales Report
+router.get('/sales_report',admincontoller.SalesReport)
+router.post('/adminSalesReportFilter',admincontoller.FilterbyDates)
 
 
 module.exports=router

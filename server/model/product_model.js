@@ -27,13 +27,17 @@ var productSchema=new mongoose.Schema({
     }],
     
     price:{
-        type: String,
+        type: Number,
         require: true
     },
 
     Blocked:{
         default:false,
         type:Boolean
+    },
+    stock:{
+        type:Number,
+        required:true
     }
     
   

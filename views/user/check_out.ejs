@@ -139,10 +139,11 @@
                                        <form id="couponForm" action="/redeem_coupon" method="post" class="flex-grow-1">
                                           <div class="form-group d-flex">
                                              <label for="couponCode" class="mr-2">Coupon Code</label>
+                                             <span style="margin-left:10px;"> <a href=""data-toggle="modal" data-target="#exampleModal">
+                                                Available coupons
+                                               </a></span>  
                                              <input type="text" class="form-control" name="coupon" id="couponCode" placeholder="Enter the coupon code">
-                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                                           Available coupons
-                                              </button>
+                                          
 
                                           </div>
                                        
@@ -197,25 +198,32 @@
  
  <!-- Modal -->
  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-   <div class="modal-dialog" role="document">
-     <div class="modal-content">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+     <div class="modal-content coupon-modal">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+         <h5 class="modal-title" id="exampleModalLabel" style="margin-left:30%; color: rgb(71, 204, 18); font-size:x-large;">Available Coupons</h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
        </div>
        <div class="modal-body">
-         <%= namesArray %>
+         <% coupon.forEach(element => { %>
+         <% if (!(new Date(element.date) < new Date()) || element.status !== true) { %>
+         <div class="coupon-item">
+           <p style="font-size: larger;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: black;font-weight:900;"><%= element.code %></p>
+         </div>
+         <% } %>
+         <% }) %>
        </div>
        <div class="modal-footer">
-         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-         <button type="button" class="btn btn-primary">Save changes</button>
+         <button type="button" class="btn btn-primary " data-dismiss="modal">Close</button>
+
        </div>
      </div>
    </div>
  </div>
-
+ 
+ 
 
 
 

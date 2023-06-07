@@ -83,8 +83,25 @@ https://templatemo.com/tm-524-product-admin
                   <input
                     id="int"
                     name="price"
-                    type="text"
+                    type="tel"
                     value="<%= user.price %>"
+                    class="form-control validate"
+                    required
+                  />
+                </div>
+
+
+
+                <div class="form-group mb-3">
+                  <label
+                    for="stock"
+                    >Stock
+                  </label>
+                  <input
+                    id="int"
+                    name="stock"
+                    type="tel"
+                    value="<%= user.stock %>"
                     class="form-control validate"
                     required
                   />
