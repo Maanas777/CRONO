@@ -1,152 +1,152 @@
 <%- include ('../partials/user-Header')%>
 
-	<%- include ('../partials/user_nav')%>
+<%- include ('../partials/user_nav')%>
 
-		<section class="page-header">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<div class="content">
-							<h1 class="page-name">Shop</h1>
-							<ol class="breadcrumb">
-								<li><a href="">Home</a></li>
-								<li class="active">shop</li>
-							</ol>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
+<section class="page-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="content">
+          <h1 class="page-name">Shop</h1>
+          <ol class="breadcrumb">
+            <li><a href="">Home</a></li>
+            <li class="active">shop</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section class="products section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="category-list">
+          <% category.forEach(function(category) { %>
+          <li>
+            <a href="/filter_category/<%= category._id %>">
+              <span class="span"><%= category.category %></span>
+            </a>
+          </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <% product.forEach(function(product) { if (!product.Blocked) { %>
+      <div class="col-md-4">
+        <div class="product-item">
+          <div class="product-thumb">
+            <span class="bage">Sale</span>
+            <a href="/single_pro/<%= product._id %>">
+              <img class="img-responsive" src="/<%= product.photo[0] %>" alt="product-img" />
+            </a>
+            <div class="preview-meta">
 
-		<section class="products section" style="margin-bottom: 80%;">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<ul class="category-list">
-							<% category.forEach(function(category) { %>
-							<li>
-								<a href="/filter_category/<%= category._id %>">
-									<span class="span"><%= category.category %></span>
-								</a>
-							</li>
-							<% }); %>
-						</ul>
-					</div>
-				</div>
-				<div class="row">
-					<% product.forEach(function(product) { if (!product.Blocked) { %>
-						<div class="col-md-4">
-							<div class="product-item">
-								<div class="product-thumb">
-									<span class="bage">Sale</span>
-									<a href="/single_pro/<%= product._id %>">
-										<img class="img-responsive" src="/<%= product.photo[0] %>" alt="product-img" />
-									</a>
-									<div class="preview-meta">
-										
-										<ul>
-											<li>
-												<span data-toggle="modal" data-target="#product-modal">
-													<i class="tf-ion-ios-search-strong"></i>
-												</span>
-											</li>
-											<li>
-												<a href="#!"><i class="tf-ion-ios-heart"></i></a>
-											</li>
-											<li>
-												<a href="/addcart/<%= product._id %>" class="add-to-cart-btn" data-product-id="<%= product._id %>">
-												  <i class="tf-ion-android-cart"></i>
-												</a>
-											  </li>
-											  
-										</ul>
-									</div>
-								</div>
-								<div class="product-content">
-									<h4><a href="/single_pro/<%= product._id %>">
-											<%= product.name %>
-										</a></h4>
-									<p class="price">
-										₹&nbsp;<%= product.price %>	
-									</p>
+              <ul>
+                <li>
+                  <span data-toggle="modal" data-target="#product-modal">
+                    <i class="tf-ion-ios-search-strong"></i>
+                  </span>
+                </li>
+                <li>
+                  <a href="#!"><i class="tf-ion-ios-heart"></i></a>
+                </li>
+                <li>
+                  <a href="/addcart/<%= product._id %>" class="add-to-cart-btn" data-product-id="<%= product._id %>">
+                    <i class="tf-ion-android-cart"></i>
+                  </a>
+                </li>
 
-										<!-- <a href="">
-											<button type="button" class="btn btn-primary">Add to cart</button>
-										</a>
-										-->
-								</div>
-							</div>
-						</div>
-						<% } }) %>
-						
-				</div>
-			</div>
-			
-		</section>
-		
-		
-		<script>
+              </ul>
+            </div>
+          </div>
+          <div class="product-content">
+            <h4><a href="/single_pro/<%= product._id %>">
+                <%= product.name %>
+              </a></h4>
+            <p class="price">
+              ₹&nbsp;<%= product.price %> 
+            </p>
+          </div>
+        </div>
+      </div>
+      <% } }) %>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <ul class="pagination">
+          <li <% if (currentPage === 1) { %>class="disabled"<% } %>>
+            <a <% if (currentPage > 1) { %>href="/products?page=<%= currentPage - 1 %>"<% } %>>&laquo;</a>
+          </li>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+          <li <% if (currentPage === i) { %>class="active"<% } %>>
+            <a href="/products?page=<%= i %>"><%= i %></a>
+          </li>
+          <% } %>
+          <li <% if (currentPage === totalPages) { %>class="disabled"<% } %>>
+            <a <% if (currentPage < totalPages) { %>href="/products?page=<%= currentPage + 1 %>"<% } %>>&raquo;</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-// Assuming you have jQuery included in your project
-$('.add-to-cart-btn').on('click', function(event) {
-  event.preventDefault();
+<script>
+  // Assuming you have jQuery included in your project
+  $('.add-to-cart-btn').on('click', function(event) {
+    event.preventDefault();
 
-  // Get the product ID from the data attribute
-  const productId = $(this).data('product-id');
+    // Get the product ID from the data attribute
+    const productId = $(this).data('product-id');
 
-  // Make an AJAX request to add the product to the cart
-  $.ajax({
-    url: '/addcart/' + productId,
-    method: 'GET',
-    success: function(response) {
-		toastr.success(response.message);
-		// Handle the success response (e.g., show toaster message)
-    },
-	error: function (error) {
-      toastr.error('An error occurred while adding the product to cart');
-    }
+    // Make an AJAX request to add the product to the cart
+    $.ajax({
+      url: '/addcart/' + productId,
+      method: 'GET',
+      success: function(response) {
+        toastr.success(response.message);
+        // Handle the success response (e.g., show toaster message)
+      },
+      error: function(error) {
+        toastr.error('An error occurred while adding the product to cart');
+      }
+    });
   });
-});
-	</script>
-
+</script>
 
 <style>
-	.category-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-bottom: 30px;
-	}
+  .category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
 
-	.category-list li {
-		margin-right: 15px;
-	}
+  .category-list li {
+    margin-right: 15px;
+  }
 
-	.category-list a {
-		text-decoration: none;
-		color: #333;
-		font-weight: bold;
-	}
+  .category-list a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
 
-	.category-list a:hover {
-		color: #020202;
-	}
+  .category-list a:hover {
+    color: #020202;
+  }
 
-	.category-list .span {
-		
-		color: #020202;
-		padding: 5px 10px;
-		border-radius: 4px;
-	}
+  .category-list .span {
+    color: #020202;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
 </style>
 
-
-
-	
-
-
-		<%- include ('../partials/user-Footer')%>
+<%- include ('../partials/user-Footer')%>

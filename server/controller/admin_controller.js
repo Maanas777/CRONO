@@ -38,7 +38,7 @@ exports.
 
 
 exports.dashboard= async (req,res)=>{
-  console.log("678");
+  
 
   const today = new Date().toISOString().split("T")[0];
   const startOfDay = new Date(today);
@@ -66,6 +66,32 @@ const todayRevenue= await orderSchema.aggregate([
 
 ])
 
+const salesCountByMonth = await orderSchema.aggregate([
+  {
+    $match: {
+      status: "Delivered",
+    },
+  },
+  {
+    $group: {
+      _id: {
+        month: { $month: "$createdAt" },
+        year: { $year: "$createdAt" },
+      },
+      count: { $sum: 1 },
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+      month: "$_id.month",
+      year: "$_id.year",
+      count: 1,
+    },
+  },
+]);
+
+console.log(salesCountByMonth);
 
 const revenue = todayRevenue.length > 0 ? todayRevenue[0].totalRevenue : 0;
 
@@ -109,7 +135,7 @@ res.render('admin/admin_index',{todaySales,
   delivered,
   Pending,
   returned,
-  Cancelled})
+  Cancelled,salesCountByMonth})
 
 
 

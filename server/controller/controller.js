@@ -25,14 +25,14 @@ const paypal = require('paypal-rest-sdk');
 ///signup
 exports.create = async (req, res) => {
   try {
+    let user = req.session.user;
     const existingUser = await usersSchema.findOne({
       $or: [{ email: req.body.email }, { phone: req.body.phone }],
     });
 
     if (existingUser) {
-      return res.render('user/signup', { msg: "User already exists" });
-    }
-    else {
+      return res.render('user/signup', { user: req.session.user,msg: "User already exists" });
+    } else {
       const saltRounds = 10; // You can adjust the number of salt rounds as needed
       bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
         if (err) {
@@ -41,7 +41,7 @@ exports.create = async (req, res) => {
           });
         }
 
-        const user = new usersSchema({
+        const newUser = new usersSchema({
           name: req.body.name,
           email: req.body.email,
           username: req.body.username,
@@ -50,24 +50,22 @@ exports.create = async (req, res) => {
         });
 
         try {
-          await user.save();
-          return res.render("user/login", { msg: "Successfully registered" });
+          await newUser.save();
+          return res.render("user/signup", { user: req.session.user, msg: "Successfully registered" });
         } catch (err) {
           return res.status(500).send({
             message: "Some error occurred while registering the user",
           });
         }
       });
-
     }
-
-
   } catch (err) {
     return res.status(500).send({
       message: "Some error occurred",
     });
   }
 };
+
 
 
 
@@ -121,26 +119,36 @@ exports.logout = (req, res) => {
 };
 
 exports.show_product = async (req, res) => {
-  const product = await productSchema.find()
+  const pageSize = 6;
+    const currentPage = parseInt(req.query.page) || 1;
+    const totalProducts = await productSchema.countDocuments();
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
+  const product = await productSchema.find().skip(skip).limit(pageSize)
 
   const category=await categorySchema.find()
-  console.log("aa",category);
+  console.log(category);
   let user = req.session.user
 
-  res.render("user/shop", { product, user,category })
+  res.render("user/shop", { product, user,category ,totalPages, currentPage })
 }
 
 exports.filter_category=async(req,res)=>{
   try{
+    const pageSize = 6;
+    const currentPage = parseInt(req.query.page) || 1;
+    const totalProducts = await productSchema.countDocuments();
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
     let user = req.session.user
     const id = req.params.id;
     const categori = await categorySchema.findOne({_id:id});
-    const product = await productSchema.find({brand:categori.category})
+    const product = await productSchema.find({brand:categori.category}).skip(skip).limit(pageSize)
     console.log('ss',product);
 
     const category=await categorySchema.find()
   
-    res.render("user/shop", { product, user,category })
+    res.render("user/shop", { product, user,category,currentPage,totalPages })
   }
   catch(error){
     console.log(error);
@@ -429,7 +437,7 @@ exports.remove_product = async (req, res) => {
 };
 
 
-exports.address = async (req, res) => {
+exports.address= async (req, res) => {
   let user = req.session.user
   if (user) {
     try {
@@ -965,20 +973,55 @@ exports.forgot_password = async (req, res) => {
 
 exports.Wallet = async (req, res) => {
   const userId = req.session.user?._id;
+  console.log(userId);
   const user = req.session.user;
+  let sum=0
 
   try {
-    const orderdetails = await orderSchema.find({ status: "Refunded Amount" }).populate('items.product');
-     console.log(orderdetails,"///////////")
+    const walletbalance = await walletSchema.findOne({ userId: userId }).populate('orderId');
+    const orderdetails = await orderSchema.find({ user:user,status: "Refunded Amount" }).populate('items.product');
+     console.log(walletbalance,"//////87686/////")
 
-  
-    const wallet_data = await walletSchema.find({ userId: userId });
+   if(walletbalance){
+   
 
+      sum+= walletbalance.balance;
+      const wallet=walletbalance.orderId;
+      res.render('user/wallet', { user, wallet, sum, walletbalance,orderdetails })
 
-    res.render('user/wallet', {  user, orderdetails, wallet_data });
-  } catch (err) {
+   
+   }
+   else {
+    res.render('user/wallet', { user, wallet: null, sum, walletbalance: null, orderdetails });
+  } 
+}catch (err) {
     console.log(err);
   }
+
+  // exports.Wallet = async (req, res) => {
+  //   const user = req.session.user;
+  //   let sum = 0;
+  
+  //   const walletbalance = await walletSchema.findOne({ userId: user }).populate('orderId');
+  //   const RefundedOrder = await orderSchema.find({ user: user, status: "Refunded Amount" }).populate('items.product');
+  //   console.log(RefundedOrder, "/////////////////////");
+    
+  //   if (walletbalance) {
+  //     const items = walletbalance.orderId[0].items;
+  //     sum += walletbalance.balance;
+  //     const wallet = walletbalance.orderId;
+  //     res.render('user/wallet', { user, wallet, sum, walletbalance, RefundedOrder });
+  //   } else {
+  //     res.render('user/wallet', { user, wallet: null, sum, walletbalance: null, RefundedOrder });
+  //   }
+  // };
+
+
+
+
+
+
+
 };
 
 
@@ -997,5 +1040,28 @@ exports.search_product = async (req, res) => {
   }
 
 };
+
+exports.user_profile= async(req,res)=>{
+  let user = req.session.user
+  let id=req.params.id
+
+  let find_user= await usersSchema.findById({_id:id})
+  res.render('user/profile',{user,find_user})
+
+}
+
+
+
+// exports.address=async(req,res)=>{
+//   let user = req.session.user
+//    let id =req.params.id
+//   const userWithAddresses = await usersSchema.findOne().populate("address");
+//   console.log(userWithAddresses);
+//   const addresses = userWithAddresses.address;
+//   console.log(addresses);
+  
+//   res.render('user/userAddresses',{user,addresses})
+
+// }
 
 

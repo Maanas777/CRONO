@@ -59,7 +59,9 @@
 					<% if (user) { %>	
 						<% if (!user.isBlocked) { %>
 						  <div class="user-dropdown">
+							<a href="/profile/<%= user._id %>">
 							<%= user.name %>
+						</a>
 							<a href="/logout">
 							  Logout
 							</a>

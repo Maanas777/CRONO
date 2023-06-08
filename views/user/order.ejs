@@ -81,9 +81,8 @@
                           <% order.items.forEach((item,index)=>{ %>
 
                             &nbsp; &nbsp; &nbsp; &nbsp;<img src=" <%= item.product.photo[0] %>" alt="" class="img-thumbnail" width="50px"><br><br>
-
-                             <a href="/view_order/<%=order._id %>"><button type="button" class="btn btn-light">View order</button> </a> 
                             <% }) %>
+                            <a href="/view_order/<%=order._id %>"><button type="button" class="btn btn-light">View order</button> </a> 
                         </td>
                      
                         <td>

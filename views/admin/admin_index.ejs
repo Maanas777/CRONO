@@ -134,6 +134,8 @@
             <span id="refunded" hidden><%= refunded %>  </span>
             <span id="returned" hidden><%= returned %>  </span>
             <span id="Cancelled" hidden><%= Cancelled %>  </span>
+            <span id="monthlysales" hidden><%= JSON.stringify(salesCountByMonth) %></span>
+            
 
 
             <footer class="tm-footer row tm-mt-small">
@@ -184,6 +186,52 @@
             </script>
 
             <script>
+             var salesCountByMonth = JSON.parse(document.getElementById('monthlysales').textContent);
+    const salesCountByMonthObj = {
+        Jan: 0,
+        Feb: 0,
+        March: 0,
+        April: 0,
+        May: 0,
+        June: 0
+      };
+      
+      
+      salesCountByMonth.forEach((monthData) => {
+        const { month, count } = monthData;
+        switch (month) {
+          case 1:
+            salesCountByMonthObj.Jan = count;
+            break;
+          case 2:
+            salesCountByMonthObj.Feb = count;
+            break;
+          case 3:
+            salesCountByMonthObj.March = count;
+            break;
+          case 4:
+            salesCountByMonthObj.April = count;
+            break;
+          case 5:
+            salesCountByMonthObj.May = count;
+            break;
+          case 6:
+            salesCountByMonthObj.June = count;
+            break;
+          default:
+            break;
+        }
+      });
+      
+      
+      const salesCountJan = salesCountByMonthObj.Jan;
+      const salesCountFeb = salesCountByMonthObj.Feb;
+      const salesCountMarch = salesCountByMonthObj.March;
+      const salesCountApril = salesCountByMonthObj.April;
+      const salesCountMay = salesCountByMonthObj.May;
+      const salesCountJune = salesCountByMonthObj.June;
+
+
                 const ctz = document.getElementById('barchart');
 
                 new Chart(ctz, {
@@ -191,8 +239,8 @@
                     data: {
                         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
                         datasets: [{
-                            label: '',
-                            data: [12, 19, 3, 5, 2, 3],
+                            label: 'Sales',
+                            data: [salesCountJan, salesCountFeb, salesCountMarch, salesCountApril, salesCountMay, salesCountJune],
                             borderWidth: 1
                         }]
                     },

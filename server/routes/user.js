@@ -3,6 +3,8 @@ const router= express.Router()
 const controller=require('../controller/controller')
 const userSchema=require('../model/model')
 const bannerSchema=require('../model/banner')
+const categorySchema=require('../model/add_category')
+const productSchema=require('../model/product_model')
 // const session=require('express-session')
 
 
@@ -51,9 +53,22 @@ const isUserBlocked=async(req,res,next)=>{
 router.get('/', async (req, res) => {
     let user = req.session.user;
     const banner = await bannerSchema.find();
-  
-    res.render('user/index', { user: user ,banner});
+    
+    const category = await categorySchema.find();
+
+    res.render('user/index', { user: user ,banner,category});
   });
+  
+//   router.get('/specific/:id', async (req, res) => {
+//     let user = req.session.user;
+//     const id = req.params.id;
+   
+//     const category = await categorySchema.findOne({ _id: id });
+//     const product = await productSchema.find({ brand: category.category });
+//     console.log('ss', product);
+//     res.render("user/shop", { product, user,category });
+//   });
+  
   
 
 
@@ -78,6 +93,8 @@ router.get('/otp',(req,res)=>{
 //     let user=req.session.user
 //     res.render('user/cart',{user:user})
 // })
+
+
 
 
 router.post('/signup',controller.create)
@@ -126,6 +143,9 @@ router.get('/wallet_page',isLoggedIn,controller.Wallet)
 //search product
 router.post('/search_product',controller.search_product)
 
+//user profile
+router.get('/profile/:id',controller.user_profile)
+router.get('/address',controller.address)
 
 
 

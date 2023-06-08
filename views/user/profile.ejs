@@ -1,0 +1,82 @@
+<%- include ('../partials/user-Header')%>
+
+<%- include ('../partials/user_nav')%>
+
+<section class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="content">
+                    <h1 class="page-name">User profile</h1>
+                    <ol class="breadcrumb">
+                        <li><a href="index.html">Home</a></li>
+                        <li class="active">my account</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="user-dashboard page-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashboard-wrapper dashboard-user-profile">
+                    <div class="media">
+                        <div class="pull-left text-center" href="#!">
+                            <img class="media-object user-img" src="images/avater.jpg" alt="Image">
+                            <a href="#x" class="btn btn-transparent mt-20">Change Image</a>
+                        </div>
+                        <div class="media-body">
+                            <ul class="user-profile-list">
+                                <li><span>Full Name:</span><%= find_user.name %></li>
+                                <li><span>Email:</span><%= find_user.email %></li>
+                                <li><span>Phone:</span>+<%= find_user.phone %></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashboard-wrapper">
+                    <h1 class="text-center">Address</h1>
+                    <% if (find_user.address.length > 0) { %>
+                        <% find_user.address.forEach(function(address, index) { %>
+                            <div class="row">
+                                <div class="col-md-12 sm-6">
+                                    <div class="address-box">
+                                        <h5>Address <%= index + 1 %></h5>
+                                        <ul class="user-profile-list">
+                                            <li><strong>Name:</strong> <%= address.name %></li>
+                                            <li><strong>City:</strong> <%= address.city %></li>
+                                            <li><strong>State:</strong> <%= address.state %></li>
+                                            <li><strong>Postal Code:</strong> <%= address.zip %></li>
+                                            <li><strong>Phone:</strong> <%= address.phone %></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No addresses found.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        
+        
+</section>
+
+<style>
+    .address-box {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+</style>
+
+<%- include ('../partials/user-Footer')%>
