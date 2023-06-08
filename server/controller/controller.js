@@ -998,23 +998,58 @@ exports.Wallet = async (req, res) => {
     console.log(err);
   }
 
-  // exports.Wallet = async (req, res) => {
-  //   const user = req.session.user;
-  //   let sum = 0;
+}
+
+  exports.wallet_buy = async(req,res)=>{
+    try{
+      const userId= req.session.user._id
+   
+
+      const wallet = await walletSchema.findOne({ userId: userId });
+     const cart= await cartSchema.findOne({userId:userId}).populate("products.productId")
+     let totalprice=0
+
+     const items = cart.products.map((item) => {
+      const product = item.productId;
+      const quantity = item.quantity;
+      const price = item.productId.price
+     
+     
+      totalprice += price * quantity;
+      
+     })
+
+     console.log(totalprice,"kk q");
+     const balance = (10 / 100) * totalprice;
+
+      let wallet_balance= wallet.balance
+       if (balance <  wallet.balance) {
+     totalprice -= balance;
+     cart.wallet = balance;
+      await cart.save();
+
+
+        
+       wallet.balance-=balance
+
+       console.log( wallet.balance,"before");
+        await wallet.save();
+        console.log( wallet.balance,"after");
+
+
+    }
+    res.json({
+      success: true,
+      message: "Wallet add Successful",
+      totalprice,
+      wallet_balance
+    });
   
-  //   const walletbalance = await walletSchema.findOne({ userId: user }).populate('orderId');
-  //   const RefundedOrder = await orderSchema.find({ user: user, status: "Refunded Amount" }).populate('items.product');
-  //   console.log(RefundedOrder, "/////////////////////");
-    
-  //   if (walletbalance) {
-  //     const items = walletbalance.orderId[0].items;
-  //     sum += walletbalance.balance;
-  //     const wallet = walletbalance.orderId;
-  //     res.render('user/wallet', { user, wallet, sum, walletbalance, RefundedOrder });
-  //   } else {
-  //     res.render('user/wallet', { user, wallet: null, sum, walletbalance: null, RefundedOrder });
-  //   }
-  // };
+  }catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+
 
 
 

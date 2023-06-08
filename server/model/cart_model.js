@@ -24,9 +24,14 @@ const CartSchema = new mongoose.Schema(
 
     total: {
       type: Number,
-      
+
+    }, 
+    wallet: {
+      type: Number,
+
     }
-    
+
+
   },
   { timestamps: true }
 );

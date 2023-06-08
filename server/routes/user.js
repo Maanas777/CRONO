@@ -139,6 +139,7 @@ router.post('/redeem_coupon',controller.redeem_coupon)
 
 //wallet
 router.get('/wallet_page',isLoggedIn,controller.Wallet)
+router.post('/wallet_buy',controller.wallet_buy)
 
 //search product
 router.post('/search_product',controller.search_product)
