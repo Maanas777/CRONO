@@ -542,7 +542,8 @@ exports.orderConfirmation = async (req, res) => {
       const cartdisc= await cartSchema.findOne({userId:userId})
      
       const discount=cartdisc.total
-
+      const wallet_discount=cartdisc.wallet
+      console.log(wallet_discount,'////////////////////////////////////////')
       const userModel = await usersSchema.findById(userId)
 
       const addressIndex = userModel.address.findIndex((item) =>
@@ -588,16 +589,24 @@ exports.orderConfirmation = async (req, res) => {
         totalPrice -= discount;
       }
 
+     
+  if (wallet_discount!=totalPrice && wallet_discount>=0) {
+    totalPrice -= wallet_discount;
+   
+    
+  }
+  
       if (req.query.couponValue) {
         const couponValue = parseFloat(req.query.couponValue);
         if (!isNaN(couponValue)) {
           totalPrice -= couponValue;
         }
       }
+    
 
       // will continue
       if (payment == "COD") {
-
+        console.log("xxxxxxxx");
         const order = new orderSchema({
           user: userId,
           items: items,
@@ -609,7 +618,7 @@ exports.orderConfirmation = async (req, res) => {
         });
         let data = order
         await order.save()
-
+         console.log(order,"//////////////////////////////////");
 
         await cartSchema.deleteOne({ userId: userId });
 
@@ -739,8 +748,24 @@ exports.order_find = async (req, res) => {
   let userId=req.session.user?._id
 
   const order = await orderSchema.find({user:userId}).populate("items.product")
+  console.log(order,"popooopoph")
+  const orderDetails = order.map((order) => {
+    return {
+      _id: order._id,
+      items: order.items,
+      total: order.total,
+      status: order.status,
+      payment_method: order.payment_method,
+      createdAt: order.createdAt,
+      address: order.address,
+      returnExpired: order.returnExpired,
+    };
+  });
 
-  res.render('user/order', { order, user })
+console.log(orderDetails,"oiop");
+
+
+  res.render('user/order', { orderDetails, user })
 
 }
 

@@ -50,7 +50,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% order.forEach(function(order){ %>
+                    <% orderDetails.forEach(function(order){ %>
                       <tr>
                         <td>
                           <%= order.createdAt.toLocaleDateString()  %>
@@ -102,14 +102,14 @@
 
                             <% } %>
 
-                              <% if (order.status==="Delivered" ) { %>
+                              <% if (order.status==="Delivered"&& !order.returnExpired ) { %>
                                 <a type="button" class="btn btn-primary" data-toggle="modal"
                                   data-target="#Return<%= order._id %>">
                                   Return
                                 </a>
-                                <% } %>
-
-
+                                <% } else if(order.returnExpired){%>
+                                  <p>Return Not available</p>
+                                  <% } %>
                         </td>
 
                       </tr>
@@ -126,7 +126,7 @@
 
 
 
-    <% order.forEach(function(order){ %>
+    <% orderDetails.forEach(function(order){ %>
       <div class="modal fade" id="exampleModal<%= order._id %>" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true">
         <form id="cancelForm " method="POST" action="/cancel_product/<%= order._id %>">
@@ -158,7 +158,7 @@
 
 
 
-        <% order.forEach(function(order){ %>
+        <% orderDetails.forEach(function(order){ %>
           <div class="modal fade" id="Return<%= order._id %>" tabindex="-1" role="dialog"
             aria-labelledby="exampleModalLabel" aria-hidden="true">
             <form id="return " method="POST" action="/return_product/<%= order._id %>">

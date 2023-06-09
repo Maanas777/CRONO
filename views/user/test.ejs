@@ -1,0 +1,61 @@
+<tr class="text-dark">
+                                    
+    <th scope="col">Date</th>
+    <th scope="col">Product name</th>
+    <th scope="col">Amount</th>
+    <th scope="col">Address</th>
+    <th scope="col">Image</th>
+    <th scope="col">Payment Method</th>
+    <th scope="col">Status</th>
+    <th scope="col">Cancel/Return</th>
+
+</tr>
+</thead>
+<tbody>
+<% orderDetails.forEach((orders) => { %>
+<a href="/singleOrderDetails/<%= orders._id  %>">
+<tr> 
+    <td><%= orders.createdAt.toLocaleDateString() %></td>
+    <td>
+        <% orders.items.forEach((item,index) =>{ %>
+
+            <%= index+1 %>. <%= item.product.name %> <br>
+        <% }) %>
+    </td>
+    <td>₹<%= orders.total %></td>
+    <td>
+        <%= orders.address.name %><br>
+        <%= orders.address.mobile %><br>
+        <%= orders.address.address %><br>
+        <%= orders.address.city %><br>
+    </td>
+    <td>
+        <% orders.items.forEach((item,index) =>{ %>
+            
+            <img src="<%= item.product.photo[0] %>" alt="" width="40px" class="img-thumbnail"> <br>
+        <% }) %>
+    </td>
+    <td><%= orders.payment_method %></td>
+    <td>
+        <b><%= orders.status %></b>
+    </td>
+
+    
+
+        <td>
+            <% if (orders.status === 'Delivered' && !orders.returnExpired) { %>
+                <a class="btn btn-sm btn-primary" href="" data-toggle="modal" data-target="#exampleModal<%= orders._id %>">Return</a>
+              <% } else if (orders.status !== "Cancelled" && orders.status !== "Delivered") { %>
+                <a class="btn btn-sm btn-primary" href="" data-toggle="modal" data-target="#exampleModal<%= orders._id %>">Cancel</a>
+              <% } else if(orders.returnExpired){ %>
+                <p>Return Not available</p>
+              <% } %>
+        </td>
+        <td><a href="/singleOrderDetails/<%= orders._id  %>" class="btn-secondary">Details</a></td>
+    
+</tr>
+</a>
+<% }) %>
+
+</tbody>
+</table>

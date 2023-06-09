@@ -15,13 +15,15 @@ const isLogged=(req,res,next)=>{
   }
 }
 
+
 const adminLoggedIn=(req,res,next)=>{
   if(req.session.admin){
       next()
   }else{
-      res.redirect('/admin_login')
+      res.redirect('/admin')
   }
 }
+
 
 
 var storage = multer.diskStorage({
@@ -47,7 +49,21 @@ var upload = multer({
 
 
 router.get('/admin',(req,res)=>{
+   if(req.session.admin){
+   res.redirect('/admin_index')
+   }
+   else{
     res.render('admin/login')
+   }
+})
+
+
+
+router.get('/adminlogout',(req,res)=>{
+  req.session.admin = false;
+
+  req.session.destroy();
+  res.redirect("/admin")
 })
 
 
@@ -68,34 +84,34 @@ router.get('/users',(req,res)=>{
   res.render('admin/show_user')
 })
 
-router.get('/admin_index',admincontoller.dashboard)
+router.get('/admin_index',adminLoggedIn,admincontoller.dashboard)
 
 router.post("/admin",admincontoller.adminlogin);
-router.post('/add_product',upload,admincontoller.addProduct);
+router.post('/add_product',adminLoggedIn,upload,admincontoller.addProduct);
 
 // router.get("/add_product_page", admincontoller.addproductpage)
 
-router.get('/admin_products',admincontoller.find_product)
-router.get("/edit_pdt/:id",admincontoller.edit_product_page)
-router.post("/update_product/:id", upload, admincontoller.updateproduct);
+router.get('/admin_products',adminLoggedIn,admincontoller.find_product)
+router.get("/edit_pdt/:id",adminLoggedIn,admincontoller.edit_product_page)
+router.post("/update_product/:id",upload, admincontoller.updateproduct);
 
 router.get("/block_pdt/:id",admincontoller.block_product)
 router.get("/unblock_product/:id",admincontoller.unblock_product)
-router.post("/add_category",admincontoller.addcategory)
+router.post("/add_category",adminLoggedIn,admincontoller.addcategory)
 router.get("/category",admincontoller.find_category)
 router.get("/edit_category/:id",admincontoller.edit_category)
 router.post("/update_category/:id",admincontoller.update_category)
 router.get("/delete_category/:id",admincontoller.deletecategory)
-router.get("/find_user",admincontoller.find_user)
+router.get("/find_user",adminLoggedIn,admincontoller.find_user)
 router.get("/block_user/:id",admincontoller.block_user)
 router.get("/unblock_user/:id",admincontoller.unblock_user)
 router.post("/search_product",admincontoller.search_product)
-router.get("/admin_order",admincontoller.order_find)
+router.get("/admin_order",adminLoggedIn,admincontoller.order_find)
 router.post("/edit_status/:id",admincontoller.update_status)
 
 
 //coupon
-router.get('/coupon_page',admincontoller.coupon_page)
+router.get('/coupon_page',adminLoggedIn,admincontoller.coupon_page)
 router.get('/add_coupon_page',admincontoller.add_coupon_page)
 router.post('/add_coupon',admincontoller.add_coupon)
 router.get('/deactivate_coupon/:id',admincontoller.deactivate_coupon)
@@ -107,7 +123,7 @@ router.post('/edit_coupon/:id',admincontoller.edit_coupon)
 router.get('/userRefund/:id',admincontoller.userRefund)
 
 //bannner
-router.get('/banner',admincontoller.Banner)
+router.get('/banner',adminLoggedIn,admincontoller.Banner)
 router.get('/addBanner',admincontoller.AddBanner)
 router.post('/addBanner',upload,admincontoller.ADDBanner)
 router.get('/activateBanner/:id',admincontoller.activateBanner)
@@ -115,7 +131,7 @@ router.get('/deactivateBanner/:id',admincontoller.deactivatebanner)
 
 
 //sales Report
-router.get('/sales_report',admincontoller.SalesReport)
+router.get('/sales_report',adminLoggedIn,admincontoller.SalesReport)
 router.post('/adminSalesReportFilter',admincontoller.FilterbyDates)
 
 

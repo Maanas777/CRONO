@@ -10,19 +10,23 @@ const walletSchema = require('../model/wallet')
 const multer = require('multer');
 const fs = require("fs");
 const { log } = require("console");
+const session=require("express-session")
+
 
 
 exports.
   adminlogin = (req, res) => {
-    console.log(req.body);
+   req.session.admin=true
     const email = req.body.email
     const password = req.body.password
 
     try {
       if (email == "admin@gmail.com") {
         if (password == 123) {
+          req.session.admin = { email: email };
           res.redirect('/admin_index')
         }
+
         else {
           res.render("admin/login", { alert: "Invalid password" })
         }
@@ -39,7 +43,7 @@ exports.
 
 exports.dashboard= async (req,res)=>{
   
-
+const admin=req.session.admin
   const today = new Date().toISOString().split("T")[0];
   const startOfDay = new Date(today);
   const endOfDay = new Date(today);
@@ -138,37 +142,7 @@ res.render('admin/admin_index',{todaySales,
   Cancelled,salesCountByMonth})
 
 
-
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -220,8 +194,8 @@ exports.addProduct = async (req, res) => {
       brand: req.body.brand,
       stock: req.body.stock,
       photo: req.files.map((file) => file.filename)
+      
     });
-    console.log(product);
 
      await product.save();
 

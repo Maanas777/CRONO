@@ -31,7 +31,8 @@
               <td>
                 <img class="img-thumbnail" width="100px" src="<%= element.photo[0] %>">
               </td>
-              <td><%= element.date.toLocaleDateString() %></td>
+              <td><%= element.date ? element.date.toLocaleDateString() : '' %></td>
+
               <td>
                 
                 <% if (element.status) { %>
