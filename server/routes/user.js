@@ -22,7 +22,7 @@ const isLoggedIn=(req,res,next)=>{
 
     }
     else{
-        console.log("haiii");
+    
         res.redirect('/login')
         
     }

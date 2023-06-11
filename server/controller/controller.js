@@ -696,43 +696,41 @@ exports.orderConfirmation = async (req, res) => {
 }
 
 
+
+
 exports.paypal_success = async (req, res) => {
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
-  const user = req.session.user
-  const userId = req.session.user?._id
-
-
-
-
-
+  const user = req.session.user;
+  const userId = req.session.user?._id;
 
   const execute_payment_json = {
-    "payer_id": payerId,
-    "transactions": [{
-      "amount": {
-        "currency": "USD",
-        "total": paypalTotal
-      }
-    }]
+    payer_id: payerId,
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: paypalTotal,
+        },
+      },
+    ],
   };
-  paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-    //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
 
-
-
+  paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
     if (error) {
       console.log(error.response);
       throw error;
     } else {
-
-    
       console.log(JSON.stringify(payment));
-      res.render("user/paypalSuccess", { payment, user, userId, })
+
+      // Delete products from the cart
+      await cartSchema.deleteOne({ userId: userId });
+
+      res.render("user/paypalSuccess", { payment, user, userId });
     }
   });
+};
 
-}
 
 
 exports.paypal_err = (req, res) => {
@@ -748,7 +746,7 @@ exports.order_find = async (req, res) => {
   let userId=req.session.user?._id
 
   const order = await orderSchema.find({user:userId}).populate("items.product")
-  console.log(order,"popooopoph")
+ 
   const orderDetails = order.map((order) => {
     return {
       _id: order._id,
@@ -761,8 +759,7 @@ exports.order_find = async (req, res) => {
       returnExpired: order.returnExpired,
     };
   });
-
-console.log(orderDetails,"oiop");
+;
 
 
   res.render('user/order', { orderDetails, user })
@@ -775,7 +772,7 @@ exports.cancel_product = async (req, res) => {
 
   let id = req.params.id
 
-  await orderSchema.findByIdAndUpdate(id, { reason: req.body.reason });
+  const order=await orderSchema.findByIdAndUpdate(id, { reason: req.body.reason });
 
 
   const cancel_product = await orderSchema.findByIdAndUpdate(id,
@@ -783,8 +780,28 @@ exports.cancel_product = async (req, res) => {
       status: 'Cancelled'
     },
     { new: true }
-
+   
   )
+const wallet=await walletSchema.findOne({userId:order.user})
+if(wallet){
+  wallet.balance += order.total;
+  wallet.transactions.push(order.payment_method);
+ 
+  await wallet.save();
+  console.log("uiojg",wallet,"tyfdfgd");
+}
+
+else{
+  const newWallet = new walletSchema({
+    userId: order.user,
+    orderId: order._id,
+    balance: order.total,
+    transactions: [order.payment_method]
+  });
+    await newWallet.save();
+}
+await orderSchema.updateOne({ _id: id }, { $set: { status: 'Refunded Amount' } });
+
   if (cancel_product) {
     res.redirect("/order_page");
 
@@ -996,34 +1013,29 @@ exports.forgot_password = async (req, res) => {
   }
 }
 
+
+
 exports.Wallet = async (req, res) => {
   const userId = req.session.user?._id;
   console.log(userId);
   const user = req.session.user;
-  let sum=0
+  let sum = 0;
 
   try {
     const walletbalance = await walletSchema.findOne({ userId: userId }).populate('orderId');
-    const orderdetails = await orderSchema.find({ user:user,status: "Refunded Amount" }).populate('items.product');
-     console.log(walletbalance,"//////87686/////")
+    const orderdetails = await orderSchema.find({ user: user, status: "Refunded Amount" }).populate('items.product');
+    console.log(walletbalance, "//////87686/////");
 
-   if(walletbalance){
-   
+    if (walletbalance) {
+      sum += walletbalance.balance;
+    }
 
-      sum+= walletbalance.balance;
-      const wallet=walletbalance.orderId;
-      res.render('user/wallet', { user, wallet, sum, walletbalance,orderdetails })
-
-   
-   }
-   else {
-    res.render('user/wallet', { user, wallet: null, sum, walletbalance: null, orderdetails });
-  } 
-}catch (err) {
+    res.render('user/wallet', { user, wallet: walletbalance?.orderId, sum, walletbalance, orderdetails });
+  } catch (err) {
     console.log(err);
   }
+};
 
-}
 
   exports.wallet_buy = async(req,res)=>{
     try{

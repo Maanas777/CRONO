@@ -65,21 +65,30 @@
                                                 </i>
 
 
+                                 <style>
+                                    .form-control::placeholder {
+                                       font-weight: bold;
+                                    }
+                                 </style>
+
                               </div>
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment" id="paypal" value="paypal">
+                                 <input class="payment-method-input" type="radio" name="payment" id="paypal"
+                                    value="paypal">
                                  <label class="payment-method-label" for="paypal">PayPal</label>
                               </div>
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment" id="razorpay" value="razorpay">
+                                 <input class="payment-method-input" type="radio" name="payment" id="razorpay"
+                                    value="razorpay">
                                  <label class="payment-method-label" for="razorpay">Razorpay</label>
                               </div>
                               <div class="payment-method">
-                                 <input class="payment-method-input" type="radio" name="payment" id="cash-on-delivery" value="COD">
+                                 <input class="payment-method-input" type="radio" name="payment" id="cash-on-delivery"
+                                    value="COD">
                                  <label class="payment-method-label" for="cash-on-delivery">Cash on Delivery</label>
                               </div>
                               <button type="submit" class="btn btn-main mt-20">Place Order</button>
-                              
+
                            </div>
 
                         </form>
@@ -259,65 +268,64 @@
 
 
       <style>
-        .payment-methods {
-   display: flex;
-   flex-wrap: wrap;
-   justify-content: space-between;
-}
+         .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+         }
 
-.payment-method {
-   display: flex;
-   align-items: center;
-   margin-bottom: 10px;
-}
+         .payment-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+         }
 
-.payment-method-input {
-   margin-right: 10px;
-}
+         .payment-method-input {
+            margin-right: 10px;
+         }
 
-.payment-method-label {
-   display: flex;
-   align-items: center;
-   cursor: pointer;
-   font-weight: bold;
-}
+         .payment-method-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+         }
 
-.payment-method-icon {
-   display: inline-block;
-   width: 30px;
-   height: 30px;
-   line-height: 30px;
-   text-align: center;
-   background-color: #ccc;
-   border-radius: 50%;
-   margin-right: 10px;
-}
+         .payment-method-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: #ccc;
+            border-radius: 50%;
+            margin-right: 10px;
+         }
 
-.btn-main {
-   background-color: #555;
-   color: #fff;
-   padding: 10px 20px;
-   border-radius: 5px;
-   text-decoration: none;
-}
-.payment-method {
-   display: inline-flex;
-   align-items: center;
-   margin-right: 10px;
-}
+         .btn-main {
+            background-color: #555;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+         }
 
-.payment-method-input {
-   margin-right: 5px;
-}
+         .payment-method {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 10px;
+         }
 
-.payment-method-label {
-   display: flex;
-   align-items: center;
-   cursor: pointer;
-   font-weight: bold;
-}
+         .payment-method-input {
+            margin-right: 5px;
+         }
 
-
+         .payment-method-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+         }
       </style>
 
 
