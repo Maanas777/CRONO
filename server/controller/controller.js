@@ -169,6 +169,82 @@ exports.single_products = async (req, res) => {
   res.render('user/single_product', { product, user: user })
 }
 
+//low to high
+exports.LowToHigh = async (req, res) => {
+  const pageSize = 12;
+  const currentPage = parseInt(req.query.page) || 1;
+  try {
+    const category= await categorySchema.find()
+    const user = req.session.user;
+    const user_id = req.session.user_id;
+    const totalProducts = await productSchema.countDocuments({ Blocked: false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
+    const product = await productSchema
+      .find({ Blocked: false })
+      .sort({ price: 1 })
+      .skip(skip)
+      .limit(pageSize);
+    res.render("user/shop", {
+      product,
+      user,
+      user_id,
+      totalPages,
+      currentPage,
+      category
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.render("error", { message: "Error fetching products" });
+  }
+};
+
+
+//high to low
+
+exports.HighToLow = async (req, res) => {
+  const pageSize = 12;
+  const currentPage = parseInt(req.query.page) || 1;
+
+  try {
+    const category= await categorySchema.find()
+
+    const user = req.session.user;
+    const user_id = req.session.user_id;
+    const totalProducts = await productSchema.countDocuments({ Blocked: false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
+    const product = await productSchema
+      .find({ Blocked: false })
+      .sort({ price: -1 })
+      .skip(skip)
+      .limit(pageSize);
+
+      console.log(product);
+    res.render("user/shop", {
+      product,
+      user,
+      user_id,
+      totalPages,
+      currentPage,
+      category
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.render("error", { message: "Error fetching products" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 //otp
 
 exports.sendotp = async (req, res) => {
@@ -641,7 +717,7 @@ exports.orderConfirmation = async (req, res) => {
           address: specifiedAddress,
 
         })
-        await order.save()
+       req.session.order=order
 
         cart.products.forEach((element) => {
           paypalTotal += totalPrice;
@@ -704,6 +780,8 @@ exports.paypal_success = async (req, res) => {
   const user = req.session.user;
   const userId = req.session.user?._id;
 
+  const order=req.session.order
+
   const execute_payment_json = {
     payer_id: payerId,
     transactions: [
@@ -722,7 +800,11 @@ exports.paypal_success = async (req, res) => {
       throw error;
     } else {
       console.log(JSON.stringify(payment));
+const order_details=new orderSchema({
+  ...order
+})
 
+await order_details.save()
       // Delete products from the cart
       await cartSchema.deleteOne({ userId: userId });
 
@@ -788,7 +870,7 @@ if(wallet){
   wallet.transactions.push(order.payment_method);
  
   await wallet.save();
-  console.log("uiojg",wallet,"tyfdfgd");
+
 }
 
 else{
@@ -811,7 +893,6 @@ await orderSchema.updateOne({ _id: id }, { $set: { status: 'Refunded Amount' } }
     res.send("error");
   }
 }
-
 
 
 
@@ -1123,17 +1204,45 @@ exports.user_profile= async(req,res)=>{
 }
 
 
+exports.sortProducts = async (req, res) => {
+  const pageSize = 12;
+  const currentPage = parseInt(req.query.page) || 1;
+  const sortOption = req.query.sort || 'l-h';
 
-// exports.address=async(req,res)=>{
-//   let user = req.session.user
-//    let id =req.params.id
-//   const userWithAddresses = await usersSchema.findOne().populate("address");
-//   console.log(userWithAddresses);
-//   const addresses = userWithAddresses.address;
-//   console.log(addresses);
-  
-//   res.render('user/userAddresses',{user,addresses})
+  try {
+    const category = await categorySchema.find();
+    const user = req.session.user;
+    const user_id = req.session.user_id;
+    const totalProducts = await productSchema.countDocuments({ Blocked: false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
 
-// }
+    let sortQuery = {};
 
+    if (sortOption === 'l-h') {
+      sortQuery = { price: 1 }; // Sort by price: Low to High
+    } else if (sortOption === 'h-l') {
+      sortQuery = { price: -1 }; // Sort by price: High to Low
+    }
+
+    const product = await productSchema
+      .find({ Blocked: false })
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(pageSize);
+
+    res.render("user/shop", {
+      product,
+      user,
+      user_id,
+      totalPages,
+      currentPage,
+      category,
+      
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.render("error", { message: "Error fetching products" });
+  }
+};
 

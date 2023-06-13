@@ -5,7 +5,7 @@
 <div class="hero-slider">
   <% if (!banner.status) { %>
     <% banner.forEach(element => { %>
-      <div class="slider-item th-fullpage hero-area" style="background-image: url(<%= element.photo %>)">
+      <div class="slider-item th-fullpage hero-area" style="background-image: url('<%= element.photo %>')">
         <div class="container">
           <div class="row">
             <div class="col-lg-8 text-center">

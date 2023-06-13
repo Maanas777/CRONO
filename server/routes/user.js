@@ -104,7 +104,8 @@ router.get('/logout',controller.logout)
 router.get('/products',controller.show_product)
 router.get('/filter_category/:id',controller.filter_category)
 router.get('/single_pro/:id',controller.single_products)
-
+router.get('/l-h',controller.LowToHigh )
+router.get('/h-l',controller.HighToLow )
 router.get('/addcart/:id',isLoggedIn,isUserBlocked,controller.addtocart)
 router.get('/cart',isLoggedIn,isUserBlocked,controller.getCart)
 router.post('/increase_product',isUserBlocked,controller.increase_product)
@@ -140,8 +141,6 @@ router.post('/redeem_coupon',controller.redeem_coupon)
 //wallet
 router.get('/wallet_page',isLoggedIn,controller.Wallet)
 router.post('/wallet_buy',controller.wallet_buy)
-
-
 
 
 

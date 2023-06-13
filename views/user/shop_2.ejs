@@ -18,89 +18,53 @@
 
       </div>
     </section>
-
+    <button class="btn btn-secondary"><a href="/l-h?page" style="font-weight: bold; color: rgb(98, 98, 91);">Low to High</a></button> &nbsp;&nbsp;
+    <button class="btn btn-secondary"><a href="/h-l?page" style="font-weight: bold; color: rgb(98, 98, 91);">High to Low</a></button>
     <section class="products section">
       <div class="container">
         <div class="row">
           <div class="col-md-3">
             <div class="widget">
               <h4 class="widget-title">Sort By</h4>
-              <button class="btn btn-secondary"><a href="/l-h?page=<%= currentPage %>"
-                  style="font-weight: bold; color: rgb(98, 98, 91);">Low to High</a></button> &nbsp;&nbsp;
-              <button class="btn btn-secondary"><a href="/h-l?page=<%= currentPage %>"
-                  style="font-weight: bold; color: rgb(98, 98, 91);">High to Low</a></button>
+              <form method="post" action="#">
+                <select class="form-control">
+                  <option>Man</option>
+                  <option>Women</option>
+                  <option>Accessories</option>
+                  <option>Shoes</option>
+                </select>
+              </form>
             </div>
             <div class="widget product-category">
-              <div >
-              <h4 class="widget-title" style="font-weight:bolder; font-size: x-large; margin-left:-2rem;">Brands</h4>
-            </div>
-              <div class="panel-body " style="margin-left:0">
-                <ul class="category-list" style="margin-left:-5rem">
-                <div>
-                  <% category.forEach(element=> { %>
-                    <div style="margin-bottom: 1rem;" >
-                    <li style="padding-right: 50%;">
-                      <a href="/filter_category/<%= element._id %>" style="margin-right: 70%;">
-                        <%= element.category %>
-                      </a>
-                      
-                    </li>
-                  
+              <h4 class="widget-title">Brands</h4>
+              <div class="panel-group commonAccordion" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                  <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+
+                    </h4>
                   </div>
-                
-                  <% }) %>
+                  <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                      <ul>
+                        <% category.forEach(element=> { %>
+
+                          <li> <a href="/filter_category/<%= element._id %>">
+
+                              <%= element.category %>
+                            </a></li>
+                          <% }) %>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-               
-              
-                </ul>
+
+
               </div>
+
             </div>
-            
-            
 
           </div>
-          <style>
-
-.category-list {
- 
-    list-style: none;
-    padding: 10;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-content: flex-start;
-
-}
-
-.category-list li {
-  margin-right: 15px;
-  margin-bottom: 10px;
-  white-space: nowrap;
-}
-
-.category-list a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-  padding: 8px 12px;
-  border-radius: 4px;
-
-
-  transition: background-color 0.3s ease;
-}
-
-.category-list a:hover {
-  color: #ffffff;
-  background-color: #333;
-}
-
-
-
-          </style>
           <div class="col-md-9">
 
             <div class="row">
@@ -146,27 +110,7 @@
                 <% } }) %>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-12 text-center">
-              <ul class="pagination">
-                <li <% if (currentPage===1) { %>class="disabled"<% } %>>
-                    <a <% if (currentPage> 1) { %>href="/products?page=<%= currentPage - 1 %>"<% } %>>&laquo;</a>
-                </li>
-                <% for (let i=1; i <=totalPages; i++) { %>
-                  <li <% if (currentPage===i) { %>class="active"<% } %>>
-                      <a href="/products?page=<%= i %>">
-                        <%= i %>
-                      </a>
-                  </li>
-                  <% } %>
-                    <li <% if (currentPage===totalPages) { %>class="disabled"<% } %>>
-                        <a <% if (currentPage < totalPages) { %>href="/products?page=<%= currentPage + 1 %>"<% } %>
-                              >&raquo;</a>
-                    </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+         
       </div>
 
       </div>
