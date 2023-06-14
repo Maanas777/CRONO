@@ -566,38 +566,44 @@ exports.add_address = async (req, res) => {
 
 
 //checkout
+
 exports.checkout = async (req, res) => {
   try {
-    let id = req.params.id
-    let userId = req.session.user?._id
+    let id = req.params.id;
+    let userId = req.session.user?._id;
+    const user = req.session.user;
 
+    let userAdd = await usersSchema.findOne({ _id: userId },
+      { address: { $elemMatch: { _id: id } } });
 
+    const allCoupons = await couponSchema.find();
 
-    let user = await usersSchema.findOne({ _id: userId },
-      { address: { $elemMatch: { _id: id } } })
+    const updatedUserDetails= await usersSchema.find({_id:userId})
+   console.log(updatedUserDetails,"opop");
+    const usedCoupon=updatedUserDetails[0].coupon
+    console.log(usedCoupon,"popo");
 
-  
+  ;
+    const availableCoupons = allCoupons.filter(coupon => !usedCoupon.includes(coupon.code));
+    console.log(availableCoupons);
     
-    const coupon= await couponSchema.find()
 
 
-    let cart = await cartSchema.findOne({ userId: user }).populate(
-      "products.productId"
-    )
-    if (user) {
+    let cart = await cartSchema.findOne({ userId: user }).populate("products.productId");
+    
+    if (userAdd) {
       const address = user.address[0];
 
-      res.render('user/check_out', { user, cart, address,coupon })
-    }
-    else {
+      res.render('user/check_out', { user, cart, address, coupon: availableCoupons });
+    } else {
       res.status(404).send('Address not found');
-
     }
   } catch (error) {
     console.log(error);
     res.status(500).send('Server Error');
   }
-}
+};
+
 
 
 
@@ -1037,7 +1043,7 @@ exports.deleteCoupon= async(req,res)=>{
     const userCoupon = await usersSchema.findById(userId);
 
     const coupon = userCoupon.coupon.pop();
- 
+
     userCoupon.save();
     const cart = await cartSchema
     .findOne({ userId: userId })
@@ -1056,7 +1062,7 @@ exports.deleteCoupon= async(req,res)=>{
   
     // totalPrice += 50;
     
-    cart.total = 0;
+    cart.total = 0; //coupon amount
     cart.save();
   
     res.json({

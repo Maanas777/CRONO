@@ -245,17 +245,17 @@
                   </button>
                </div>
                <div class="modal-body">
-                  <% coupon.forEach(element=> { %>
-                     <% if (!(new Date(element.date) < new Date()) || element.status !==true) { %>
-                        <div class="coupon-item">
-                           <p
-                              style="font-size: larger;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: black;font-weight:900;">
-                              <%= element.code %>
-                           </p>
-                        </div>
-                        <% } %>
-                           <% }) %>
-               </div>
+                  <% coupon.forEach(element => { %>
+                    <% if (!(new Date(element.date) < new Date()) || element.status !== true  ) { %>
+                      <div class="coupon-item">
+                        <p style="font-size: larger; font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: black; font-weight:900;">
+                          <%= element.code %>
+                        </p>
+                      </div>
+                    <% } %>
+                  <% }) %>
+                </div>
+                
                <div class="modal-footer">
                   <button type="button" class="btn btn-primary " data-dismiss="modal">Close</button>
 
@@ -392,11 +392,11 @@
             var couponCodeInput = document.getElementById('couponCode');
             var totalElement = document.getElementById('totalprice');
 
-            if (couponCodeInput.value.trim() === '') {
-               // Clear the message if the coupon code input is empty
-               couponMessage.textContent = '';
-               return;
-            }
+            // if (couponCodeInput.value.trim() === '') {
+            //    // Clear the message if the coupon code input is empty
+            //    couponMessage.textContent = '';
+            //    return;
+            // }
 
             if (response.success) {
                // Coupon is available, update the message and subtract the coupon value from the total
