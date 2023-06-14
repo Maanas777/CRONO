@@ -23,7 +23,7 @@
                   <div class="col-md-8">
                      <div class="block billing-details">
                         <h4 class="widget-title">Billing Details</h4>
-                        <form class="checkout-form" action="/order/<%= address._id %>" method="post">
+                        <form class="checkout-form" action="/order/<%= address?._id %>" method="post">
                            <div class="form-group">
                               <label for="full_name">Full Name</label>
                               <input type="text" name="name" class="form-control" id="full_name"
@@ -169,23 +169,29 @@
                                                          </a></span>
                                                       <input type="text" class="form-control" name="coupon"
                                                          id="couponCode" placeholder="Enter the coupon code">
-
-
                                                    </div>
 
                                                    <div id="couponMessage"
                                                       style="padding-bottom: 10px; color: darkred;"></div>
-
                                                    <div id="couponMessage1"
                                                       style="padding-bottom: 10px; color: rgb(7, 126, 13);"></div>
 
                                                    <button type="button" onclick="redeem()"
-                                                      class="btn btn-primary ml-auto"
-                                                      style="margin-bottom: 30px;">Redeem</button>
+                                                      class="btn btn-primary ml-auto" style="margin-bottom: 30px;">
+                                                      Redeem
+                                                   </button>
 
-
-
-
+                                                   <!-- Add the delete coupon button -->
+                                                   <div>
+                                                   <button type="button" onclick="deleteCoupon()"
+                                                      id="deleteCouponButton" class="btn btn-danger">Delete
+                                                      Coupon</button>
+                                                   </div>
+                                                   <style>
+                                                      #deleteCouponButton {
+                                                         display: none;
+                                                      }
+                                                   </style>
                                                 </form>
                                              </div>
                                           </div>
@@ -399,9 +405,19 @@
                var updatedTotal = total - couponValue;
                totalElement.textContent = updatedTotal.toFixed(2); // Update the total with 2 decimal places
                couponMessage1.textContent = response.message; // Display the success message from the response
+
+               setTimeout(function () {
+                  couponMessage1.textContent = '';
+               }, 2000);
+               deleteCouponButton.style.display = 'inline';
+
             } else {
                // Coupon is not available or there was an error
                couponMessage.textContent = response.message; // Display the error message from the response
+               setTimeout(function () {
+                  couponMessage.textContent = '';
+               }, 2000);
+               deleteCouponButton.style.display = 'none';
             }
          }
 
@@ -448,8 +464,6 @@
 
             if (walletBalance > sum) {
                newtotal = (itemTotal - sum)
-               console.log(newtotal, "////////////////////////////////////////////////////////////")
-
 
             } else {
                return alert('wallet Amount insufficient')
@@ -466,7 +480,56 @@
 
 
 
+         // Function to delete the selected coupon
+         function deleteCoupon() {
+
+            $.ajax({
+               url: "/delete_coupon",
+               type: "post",
+               success: function (data) {
+                  handleCouponResponse(data);
+                  hideDeleteCouponButton();
+               },
+               error: function () {
+                  console.log('error');
+               }
+            });
+
+            function handleCouponResponse(data) {
+               var couponMessage2 = document.getElementById('couponMessage');
+               var totalElement = document.getElementById('totalprice');
+
+               if (data.success) {
+                  var new_amount = data.totalPrice
+                  var total = parseFloat(totalElement.textContent);
+                  couponMessage2.textContent = data.message;
+
+                  console.log(total, "789678");
+                  console.log(new_amount, "789678");
+                  totalElement.textContent = new_amount
+
+                  setTimeout(function () {
+                     couponMessage2.textContent = '';
+                  }, 2000);
+
+               } else {
+                  console.log('error');
+               }
+            }
+            function hideDeleteCouponButton() {
+               console.log("piopi");
+      var deleteCouponButton = document.getElementById('deleteCouponButton');
+      deleteCouponButton.style.display = 'none';
+   }
+         }
+
+
       </script>
+
+
+
+
+
 
 
 

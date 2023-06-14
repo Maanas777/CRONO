@@ -974,9 +974,12 @@ exports.redeem_coupon = async (req, res) => {
       success: false,
       message: 'Coupon Already used'
     });
+  
   }
+ 
 
   userCoupon.coupon.push(coupon);
+
   await userCoupon.save();
 
   if (!couponFind || couponFind.status === false) {
@@ -1012,7 +1015,7 @@ exports.redeem_coupon = async (req, res) => {
    cart.total=amount
    
     if (!cart) {
-console.log("Cart not found");
+ console.log("Cart not found");
       return; // or throw an error
     }
   
@@ -1027,6 +1030,51 @@ console.log("Cart not found");
   
 
 };
+exports.deleteCoupon= async(req,res)=>{
+
+ 
+  const userId = req.session.user._id;
+    const userCoupon = await usersSchema.findById(userId);
+
+    const coupon = userCoupon.coupon.pop();
+ 
+    userCoupon.save();
+    const cart = await cartSchema
+    .findOne({ userId: userId })
+    .populate("products.productId");
+  
+  let totalPrice = 0;
+  const items = cart.products.map((item) => {
+    const product = item.productId; // Access the productId instead of product
+    const quantity = item.quantity;
+    const price = product.price;
+  
+    totalPrice += price * quantity;
+  
+    return { product, quantity, price }; // Return an object with the desired properties
+  });
+  
+    // totalPrice += 50;
+    
+    cart.total = 0;
+    cart.save();
+  
+    res.json({
+      success: true,
+      message: "coupon deleted successfully.",
+      totalPrice,
+    });
+  };
+  
+
+
+
+
+
+
+
+
+
 
 
 //forgot password

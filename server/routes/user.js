@@ -137,7 +137,7 @@ router.get('/paypal-success',controller.paypal_err)
 
 //coupon
 router.post('/redeem_coupon',controller.redeem_coupon)
-
+router.post('/delete_coupon',controller.deleteCoupon)
 //wallet
 router.get('/wallet_page',isLoggedIn,controller.Wallet)
 router.post('/wallet_buy',controller.wallet_buy)
