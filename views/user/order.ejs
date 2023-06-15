@@ -42,7 +42,7 @@
                       <th>Amount</th>
                       <th>Adress</th>
                       <th>Image</th>
-                    
+
                       <th>Payment Method</th>
                       <th>Status</th>
 
@@ -80,16 +80,18 @@
                         <td>
                           <% order.items.forEach((item,index)=>{ %>
 
-                            &nbsp; &nbsp; &nbsp; &nbsp;<img src=" <%= item.product.photo[0] %>" alt="" class="img-thumbnail" width="50px"><br><br>
+                            &nbsp; &nbsp; &nbsp; &nbsp;<img src=" <%= item.product.photo[0] %>" alt=""
+                              class="img-thumbnail" width="50px"><br><br>
                             <% }) %>
-                            <a href="/view_order/<%=order._id %>"><button type="button" class="btn btn-light">View order</button> </a> 
+                              <a href="/view_order/<%=order._id %>"><button type="button" class="btn btn-light">View
+                                  order</button> </a>
                         </td>
-                     
+
                         <td>
                           &nbsp; &nbsp; &nbsp; &nbsp; <%= order.payment_method %>
                         </td>
                         <td>
-                        <%= order.status %>
+                          <%= order.status %>
                         </td>
                         <td>
 
@@ -102,7 +104,7 @@
 
                             <% } %>
 
-                              <% if (order.status==="Delivered"&& !order.returnExpired ) { %>
+                              <% if (order.status==="Delivered" && !order.returnExpired ) { %>
                                 <a type="button" class="btn btn-primary" data-toggle="modal"
                                   data-target="#Return<%= order._id %>">
                                   Return
@@ -129,7 +131,9 @@
     <% orderDetails.forEach(function(order){ %>
       <div class="modal fade" id="exampleModal<%= order._id %>" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <form id="cancelForm " method="POST" action="/cancel_product/<%= order._id %>">
+        <form id="cancelForm" onsubmit="cancelOrder('<%= order._id %>'); return false;" method="POST"
+          action="/cancel_product/<%= order._id %>">
+
           <div class="modal-dialog" role="document">
 
             <div class="modal-content">
@@ -161,7 +165,8 @@
         <% orderDetails.forEach(function(order){ %>
           <div class="modal fade" id="Return<%= order._id %>" tabindex="-1" role="dialog"
             aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <form id="return " method="POST" action="/return_product/<%= order._id %>">
+            <form id="return " onsubmit="returnOrder('<%= order._id %>');return false;" method="POST"
+              action="/return_product/<%= order._id %>">
               <div class="modal-dialog" role="document">
 
                 <div class="modal-content">
@@ -186,6 +191,60 @@
           </div>
           <% }) %>
 
+
+            <script>
+              function cancelOrder(orderId) {
+                const reason = $('#cancelForm textarea[name="reason"]').val();
+
+                // Perform the cancellation action
+                $.post('/cancel_product/' + orderId, { reason })
+                  .done(function (response) {
+                    // Show success toast message
+                    toastr.success('Order Cancelled', 'Your order has been cancelled successfully.');
+
+                    // Reload the page after the toast message disappears
+                    setTimeout(function () {
+                      location.reload();
+                    }, 2000);
+                  })
+                  .fail(function () {
+                    // Show error toast message
+                    toastr.error('Error', 'Failed to cancel the order. Please try again later.');
+                  });
+              }
+
+
+              function returnOrder(orderId) {
+
+                const reason = $('#return textarea[name="reason"]').val();
+
+                // Perform the cancellation action
+                $.post('/return_product/' + orderId, { reason })
+                  .done(function (response) {
+                    // Show success toast message
+                    toastr.success('Product Returned', 'Your order has been Returned successfully.');
+
+                    // Reload the page after the toast message disappears
+                    setTimeout(function () {
+                      location.reload();
+                    }, 2000);
+                  })
+                  .fail(function () {
+                    // Show error toast message
+                    toastr.error('Error', 'Failed to Return the order. Please try again later.');
+                  });
+
+
+
+              }
+
+
+
+
+
+
+
+            </script>
 
 
 

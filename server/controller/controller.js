@@ -579,7 +579,7 @@ exports.checkout = async (req, res) => {
     const allCoupons = await couponSchema.find();
 
     const updatedUserDetails= await usersSchema.find({_id:userId})
-   console.log(updatedUserDetails,"opop");
+   console.log("jkk",updatedUserDetails,"opop");
     const usedCoupon=updatedUserDetails[0].coupon
     console.log(usedCoupon,"popo");
 
@@ -857,48 +857,48 @@ exports.order_find = async (req, res) => {
 
 
 exports.cancel_product = async (req, res) => {
+  let id = req.params.id;
 
-  let id = req.params.id
+  try {
+    const order = await orderSchema.findByIdAndUpdate(id, { reason: req.body.reason });
 
-  const order=await orderSchema.findByIdAndUpdate(id, { reason: req.body.reason });
+    const cancel_product = await orderSchema.findByIdAndUpdate(
+      id,
+      {
+        status: 'Cancelled'
+      },
+      { new: true }
+    );
 
+    const wallet = await walletSchema.findOne({ userId: order.user });
+    if (wallet) {
+      wallet.balance += order.total;
+      wallet.transactions.push(order.payment_method);
+      await wallet.save();
+    } else {
+      const newWallet = new walletSchema({
+        userId: order.user,
+        orderId: order._id,
+        balance: order.total,
+        transactions: [order.payment_method]
+      });
+      await newWallet.save();
+    }
 
-  const cancel_product = await orderSchema.findByIdAndUpdate(id,
-    {
-      status: 'Cancelled'
-    },
-    { new: true }
-   
-  )
-const wallet=await walletSchema.findOne({userId:order.user})
-if(wallet){
-  wallet.balance += order.total;
-  wallet.transactions.push(order.payment_method);
- 
-  await wallet.save();
+    await orderSchema.updateOne({ _id: id }, { $set: { status: 'Refunded Amount' } });
 
-}
-
-else{
-  const newWallet = new walletSchema({
-    userId: order.user,
-    orderId: order._id,
-    balance: order.total,
-    transactions: [order.payment_method]
-  });
-    await newWallet.save();
-}
-await orderSchema.updateOne({ _id: id }, { $set: { status: 'Refunded Amount' } });
-
-  if (cancel_product) {
-    res.redirect("/order_page");
-
-  } else {
-    // Product not found
-
-    res.send("error");
+    if (cancel_product) {
+      // Show toaster message
+      res.send("Order cancelled successfully.");
+    } else {
+      // Product not found
+      res.send("Error cancelling the order.");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
   }
-}
+};
 
 
 
@@ -923,12 +923,11 @@ exports.return_product = async (req, res) => {
   console.log(return_product.status,"8989757");
 
   if (return_product) {
-    res.redirect("/order_page");
+    res.send("Order Returned successfully.")
   }
   else {
     // Product not found
-
-    res.send("error");
+    res.send("Error Whuile Returning the order.");;
   }
 }
 
