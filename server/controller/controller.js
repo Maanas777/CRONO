@@ -735,8 +735,8 @@ exports.orderConfirmation = async (req, res) => {
           intent: "sale",
           payer: { payment_method: "paypal" },
           redirect_urls: {
-            return_url: "http://localhost:3002/paypal-success",
-            cancel_url: "http://localhost:3002/paypal-err",
+            return_url: "http://smartcrono.shop/paypal-success",
+            cancel_url: "http://smartcrono.shop/paypal-err",
           },
           transactions: [
             {
