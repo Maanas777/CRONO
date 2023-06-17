@@ -11,6 +11,7 @@ const multer = require('multer');
 const fs = require("fs");
 const { log } = require("console");
 const session=require("express-session")
+const offerSchema=require('../model/offer')
 
 
 
@@ -814,3 +815,209 @@ exports.Banner=async(req,res)=>{
    
     res.render("admin/sales_report",{admin,filteredOrders})
   }
+
+  exports.category_offer=async(req,res)=>{
+    const admin=req.session.admin
+    const categoryoffer= await offerSchema.find()
+    res.render('admin/category_offer',{admin,categoryoffer})
+
+
+  }
+
+  exports.add_category_page=async(req,res)=>{
+    try {
+      const admin=req.session.admin
+  
+      res.render('admin/add_offer',{admin})
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  exports.add_offer=async(req,res)=>{
+    try {
+       const categoryOffer=req.body.categorytitle
+      
+       const category_Offer=await categorySchema.findOne({category:categoryOffer})
+       console.log(category_Offer);
+
+       if (category_Offer) {
+        const CategoryOffer=new offerSchema({
+          categoryOffer:req.body.categorytitle,
+          date:req.body.date,
+          offer:req.body.offer
+       })
+       console.log("yuyuy");
+       await CategoryOffer.save()
+       res.redirect('/category_offer')
+    }
+  }catch(error){
+console.log(error);
+  }
+}
+
+exports.activate_offer=async(req,res)=>{
+  try {
+    const offerId=req.params.id
+    const categoryOffer=await offerSchema.findById(offerId)
+   ;
+   
+    if(categoryOffer){
+      console.log(categoryOffer);
+      if(categoryOffer.status){
+       res.render('admin/category_offer',{ categoryOffer,status:false,message:"Another offer is applied"})
+      }
+      const products=await productSchema.find({brand:categoryOffer.categoryOffer})
+  
+  
+      for(const product of products){
+        const discountedPrice=product.price-categoryOffer.offer
+    
+  
+        if(product.price>discountedPrice){
+          product.price=discountedPrice
+    
+          product.originalPrice=product.price+categoryOffer.offer
+          await product.save()
+         
+        }
+  
+        categoryOffer.status=true
+        await categoryOffer.save()
+       res.redirect('/category_offer')
+      }
+     
+    }
+  } catch (error) {
+    
+  }
+
+
+}
+
+
+exports.deoffercategory=async(req,res)=>{
+  try {
+    const offerId=req.params.id
+    const categoryOffer=await offerSchema.findById(offerId)
+    
+    if(categoryOffer){
+  
+      const products=await productSchema.find({brand:categoryOffer.categoryOffer})
+  
+  
+      for(const product of products){
+        const Originalprice=product.price+categoryOffer.offer
+     
+        
+        if(product.price<Originalprice){
+          product.price=Originalprice
+
+          product.originalPrice=product.price+categoryOffer.offer
+          await product.save()
+         
+        }
+         
+      categoryOffer.status=false
+    
+      await categoryOffer.save()
+     
+     res.redirect('/category_offer')
+      }
+     
+    
+  }
+  } catch (error) {
+    
+  }
+ 
+}
+
+exports.CategoryOfferApple=async(req,res)=>{
+  const pageSize = 3;
+  const currentPage = parseInt(req.query.page) || 1;
+  try {
+    let id=req.params.id
+
+    let user = req.session.user;
+    let userId = req.session.user?._id;
+    const totalProducts = await productSchema.countDocuments({ Blocked:false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
+    let product = await productSchema.find({ brand: "Apple" }).skip(skip).limit(pageSize)
+  
+    const offer=await offerSchema.find({categoryOffer:"Apple" })
+
+
+     if(offer){
+       
+   const originalprice=product.map((element,i)=>(element.price+offer[0].offer))
+
+      res.render("user/offer", { user, product,currentPage,totalPages,originalprice,offer})
+     }
+  
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+exports.CategoryOfferFozzil=async(req,res)=>{
+  const pageSize = 3;
+  const currentPage = parseInt(req.query.page) || 1;
+  try {
+    let id=req.params.id
+
+    let user = req.session.user;
+    let userId = req.session.user?._id;
+    const totalProducts = await productSchema.countDocuments({ Blocked:false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
+    let product = await productSchema.find({ brand: "Fossil" }).skip(skip).limit(pageSize)
+  
+    const offer=await offerSchema.find({categoryOffer:"Fossil" })
+
+
+     if(offer){
+       
+   const originalprice=product.map((element,i)=>(element.price+offer[0].offer))
+
+      res.render("user/offer", { user, product,currentPage,totalPages,originalprice,offer})
+     }
+  
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+exports.CategoryOfferBoat=async(req,res)=>{
+  const pageSize = 3;
+  const currentPage = parseInt(req.query.page) || 1;
+  try {
+    let id=req.params.id
+
+    let user = req.session.user;
+    let userId = req.session.user?._id;
+    const totalProducts = await productSchema.countDocuments({ Blocked:false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+    const skip = (currentPage - 1) * pageSize;
+    let product = await productSchema.find({ brand: "Boat" }).skip(skip).limit(pageSize)
+  
+    const offer=await offerSchema.find({categoryOffer:"Boat" })
+
+
+     if(offer){
+       
+   const originalprice=product.map((element,i)=>(element.price+offer[0].offer))
+
+      res.render("user/offer", { user, product,currentPage,totalPages,originalprice,offer})
+     }
+  
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+

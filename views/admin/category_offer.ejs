@@ -1,0 +1,183 @@
+<%- include ('../partials/admin_header')%>
+    <%- include ('../admin/nav', { currentPage: 'Offers' }) %>
+
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+
+
+        <div class="row tm-content-row m-2 mt-3">
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-12 tm-block-col">
+                <div class="tm-bg-primary tm-block tm-block-products">
+                    <div class="tm-product-table-container">
+                        <div class="row mb-3">
+                            <div class="col-sm-12 col-md-6">
+
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+
+                            </div>
+                        </div>
+                        <table id="productTable" class="table table-hover tm-table-small tm-product-table">
+                            <a href="/addcategoryoffer">
+                                <button type="button" class="btn btn-success mb-5 ">Add Offer</button>
+                            </a>
+
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl No</th>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Discount</th>
+                                    <th scope="col">Expiry Date</th>
+                                    <th scope="col">Edit</th>
+                                    <th scope="col">Activate/Deactivate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% categoryoffer.forEach(function(offer, index){ %>
+                                    <tr>
+                                        <td>
+                                            <%= index+1 %>
+                                        </td>
+                                        <td>
+                                            <%= offer.categoryOffer %>
+                                        </td>
+                                        <td>
+                                            <%= offer.offer %>
+                                        </td>
+
+                                        <td>
+                                            <% if (offer.status==false) { %>
+                                                <span class="text-danger" style="font-weight: bold;">Deactivated</span>
+                                                <% } else if (new Date(offer.date) < new Date()) { %>
+                                                    <span class="text-danger" style="font-weight: bold;">Expired</span>
+                                                    <% } else { %>
+                                                        <%= offer.date.toLocaleDateString() %>
+                                                            <% } %>
+                                        </td>
+
+                                        <td>
+                                            <a class="btn btn-primary" data-toggle="modal"
+                                                data-target="#edit_offer<%= offer._id %>">Edit</a>
+                                        </td>
+
+                                        <td>
+                                            <% if (offer.status) { %>
+                                                <a href="/deactivateoffer/<%= offer._id %>" class="btn btn-danger"
+                                                    onclick="confirmDeactivate(event)">Deactivate</a>
+                                                <% } else { %>
+                                                    <a href="/activateoffer/<%= offer._id %>" class="btn btn-success"
+                                                        onclick="confirmActivate(event)">Activate</a>
+                                                    <% } %>
+                                        </td>
+
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- table container -->
+                </div>
+            </div>
+        </div>
+
+        <% categoryoffer.forEach(function(offer){ %>
+            <div class="modal fade" id="edit_offer<%= offer._id %>" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="row tm-edit-product-row">
+                                <div class="col-xl-6 col-lg-6 col-md-12">
+                                    <form action="/edit_coupon/<%= offer._id %>" method="POST"
+                                        class="tm-edit-product-form">
+                                        <div class="form-group mb-3 custom-width">
+
+                                            <label for="coupon code" style="color:black">Brand
+                                            </label>
+                                            <input id="coupon_code" name="coupon_code"
+                                                value="<%= offer.categoryOffer %>" type="text"
+                                                class="form-control validate" required />
+                                        </div>
+                                        <div class="form-group mb-3 custom-width">
+                                            <label style="color:black">Expiry Date</label>
+
+                                            <input id="date" name="date" type="date"
+                                                value="<%= offer.date.toLocaleDateString() %>"
+                                                class="form-control validate" required />
+                                        </div>
+                                        <div class="form-group mb-3 custom-width">
+                                            <label style="color:black">Discount Amount</label>
+                                            <input id="discount" name="discount" type="text" value="<%= offer.offer %>"
+                                                class="form-control validate" required />
+                                        </div>
+
+
+                                        <button type="submit" class="btn btn-success center-button">Edit Coupon</button>
+
+
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+
+                <style>
+                    .custom-width {
+                        margin-left: 30px;
+                        width: 400px;
+                        /* Adjust the width value as per your requirements */
+                    }
+
+                    .center-button {
+                        display: block;
+                        margin-left: 150px;
+                        text-align: center;
+                    }
+                </style>
+                <script>
+                    function confirmActivate(event) {
+                        event.preventDefault();
+                        swal({
+                            title: "Do you really want Activate The Offer ?",
+                            icon: "warning",
+                            buttons: {
+                                cancel: "No",
+                                confirm: "Yes"
+                            }
+                        }).then(function (confirmed) {
+                            if (confirmed) {
+                                window.location.href = event.target.getAttribute("href");
+                            }
+                        })
+
+
+                    }
+
+
+                    function confirmDeactivate(event) {
+                        event.preventDefault();
+                        swal({
+                            title: "Do you really want Deactivate The Offer ?",
+                            icon: "warning",
+                            buttons: {
+                                cancel: "No",
+                                confirm: "Yes"
+                            }
+                        }).then(function (confirmed) {
+                            if (confirmed) {
+                                window.location.href = event.target.getAttribute("href");
+                            }
+                        })
+
+
+                    }
+
+
+
+                </script>

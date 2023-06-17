@@ -1,0 +1,257 @@
+<%- include ('../partials/user-Header')%>
+
+<%- include ('../partials/user_nav')%>
+
+<section class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="content">
+                    <h1 class="page-name">Offers on Brand</h1>
+                    <ol class="breadcrumb">
+                        <li><a href="index.html">Home</a></li>
+                        <li class="active">shop</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="products section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="widget"></div>
+                <div class="widget product-category">
+                    <!-- Add your product categories here -->
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <% if (offer[0].status == true) { %>
+
+                <div class="row">
+                    <% product.forEach(function(product, i) { if (!product.Blocked) { %>
+                    <div class="col-md-4">
+                        <div class="product-item">
+                            <div class="product-thumb">
+                                <span class="badge">Sale</span>
+                                <a href="/single_pro/<%= product._id %>">
+                                    <img class="img-responsive" src="/<%= product.photo[0] %>" alt="product-img" />
+                                </a>
+                                <div class="preview-meta">
+                                    <ul>
+                                        <li>
+                                            <span data-toggle="modal" data-target="#product-modal">
+                                                <i class="tf-ion-ios-search-strong"></i>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <a href="#!"><i class="tf-ion-ios-heart"></i></a>
+                                        </li>
+                                        <li>
+                                            <a href="/addcart/<%= product._id %>" class="add-to-cart-btn"
+                                                data-product-id="<%= product._id %>">
+                                                <i class="tf-ion-android-cart"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h4>
+                                    <a href="/single_pro/<%= product._id %>">
+                                        <%= product.name %>
+                                    </a>
+                                </h4>
+                              
+                                <div class="special-offer">Special Offer</div>
+                               
+                                <del>₹&nbsp;<%= originalprice[i] %></del>
+                                <p class="price">
+                                    ₹&nbsp;<%= product.price %>
+                                </p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <% } }) %>
+
+                </div>
+
+                <% } else { %>
+                    <div class="no-offer">
+                        <img src="\asset_1\images\backgrounds\no-product-found.png" alt="No Offer" />
+                        <p>Sorry, there are no offers available at the moment.</p>
+                    </div>
+                    
+                <% } %>
+
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <ul class="pagination">
+                            <li <% if (currentPage === 1) { %>class="disabled"<% } %>>
+                                <a <% if (currentPage > 1) { %>href="/products?page=<%= currentPage - 1 %>"<% } %>>&laquo;</a>
+                            </li>
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li <% if (currentPage === i) { %>class="active"<% } %>>
+                                <a href="/products?page=<%= i %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                            <% } %>
+                            <li <% if (currentPage === totalPages) { %>class="disabled"<% } %>>
+                                <a <% if (currentPage < totalPages) { %>href="/products?page=<%= currentPage + 1 %>"<% } %>>&raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    // Assuming you have jQuery included in your project
+    $('.add-to-cart-btn').on('click', function(event) {
+        event.preventDefault();
+
+        // Get the product ID from the data attribute
+        const productId = $(this).data('product-id');
+
+        // Make an AJAX request to add the product to the cart
+        $.ajax({
+            url: '/addcart/' + productId,
+            method: 'GET',
+            success: function(response) {
+                toastr.success(response.message);
+                // Handle the success response (e.g., show toaster message)
+            },
+            error: function(error) {
+                toastr.error('An error occurred while adding the product to cart');
+            }
+        });
+    });
+</script>
+
+<style>
+    .category-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .category-list li {
+        margin-right: 15px;
+    }
+
+    .category-list a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .category-list a:hover {
+        color: #020202;
+    }
+
+    .category-list .span {
+        color: #020202;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    /* Additional Styles for Offer Page */
+    .badge {
+        background-color: #ff5e14;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 12px;
+    }
+
+    .product-item {
+        position: relative;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .product-thumb {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-thumb img {
+        width: 100%;
+        height: auto;
+    }
+
+    .product-content {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .product-content h4 {
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .product-content del {
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .product-content p.price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #ff5e14;
+    }
+
+    .add-to-cart-btn {
+        display: inline-block;
+        padding: 5px;
+        background-color: #ff5e14;
+        color: #fff;
+        border-radius: 4px;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .add-to-cart-btn:hover {
+        background-color: #e64a0f;
+    }
+
+    .special-offer {
+        background-color: #ffcc00;
+        color: #000;
+        padding: 5px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        /* Add any additional styles you want for the special offer content */
+    }
+
+    .no-offer {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .no-offer img {
+        width: 200px;
+        height: 200px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<%- include ('../partials/user-Footer')%>

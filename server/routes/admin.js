@@ -134,5 +134,13 @@ router.get('/deactivateBanner/:id',admincontoller.deactivatebanner)
 router.get('/sales_report',adminLoggedIn,admincontoller.SalesReport)
 router.post('/adminSalesReportFilter',admincontoller.FilterbyDates)
 
-
+//category offer
+router.get('/category_offer',admincontoller.category_offer)
+router.get('/addcategoryoffer',admincontoller.add_category_page)
+router.post('/add_offer',admincontoller.add_offer)
+router.get('/activateoffer/:id',admincontoller.activate_offer)
+router.get('/deactivateoffer/:id',admincontoller.deoffercategory)
+router.get('/category_offer/:id',admincontoller.CategoryOfferApple)
+router.get('/category_offer1/:id',admincontoller.CategoryOfferFozzil)
+router.get('/category_offer2/:id',admincontoller.CategoryOfferBoat)
 module.exports=router
