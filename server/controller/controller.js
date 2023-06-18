@@ -266,7 +266,7 @@ exports.sendotp = async (req, res) => {
         to: "+91" + phone,
         channel: "sms"
       })
-    res.render('user/fpverify_otp', { msg: "otp send successfully" })
+    res.render('user/fpverify_otp', { msg: "otp send successfully",user: user })
 
   } catch (error) {
     res.status(error?.status || 400)
@@ -277,7 +277,7 @@ exports.sendotp = async (req, res) => {
 //verify otp
 
 exports.verifyotp = async (req, res) => {
-
+  let user=req.session.user
   const verificationCode = req.body.otp
   const phoneNumber = req.session.phone
   // console.log(phoneNumber);
@@ -303,10 +303,10 @@ exports.verifyotp = async (req, res) => {
 
     if (verification_check.status === 'approved') {
 
-      res.render('user/forgot_password');
+      res.render('user/forgot_password',{user: user});
     } else {
       // If the verification fails, return an error message
-      res.render('user/otp_login', { msg: "Invalid verification code" });
+      res.render('user/otp_login', { msg: "Invalid verification code",user: user });
     }
   } catch (err) {
     res.status(500).send({ message: err.message || "Some error occurred while verifying the code" });
@@ -1092,7 +1092,7 @@ exports.otp_page = (req, res) => {
 
 
 exports.forgot_password = async (req, res) => {
-
+  let user=req.session.user
   const phoneNumber = req.session.phone;
   const password = req.body.password;
   console.log(phoneNumber, "**)(");
@@ -1124,7 +1124,7 @@ exports.forgot_password = async (req, res) => {
                   });
               } else {
                 res.render("user/login", {
-                  message: "Successfully updated password",
+                  message: "Successfully updated password",user: user
                 });
               }
             })
