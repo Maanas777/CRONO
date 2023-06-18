@@ -124,7 +124,7 @@ router.post('/return_product/:id',controller.return_product)
 router.get('/view_order/:id',controller.view_order)
 router.get('/invoice/:id',controller.invoice)
 
-//forgot password
+//forgot password otp
 router.get('/forgot_otp',controller.otp_page)
 router.post('/sendOtp',controller.sendotp)
 router.post('/verifyOtp',controller.verifyotp)

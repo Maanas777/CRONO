@@ -306,7 +306,7 @@ exports.verifyotp = async (req, res) => {
       res.render('user/forgot_password',{user: user});
     } else {
       // If the verification fails, return an error message
-      res.render('user/otp_login', { msg: "Invalid verification code",user: user });
+      res.render('user/fpverify_otp', { msg: "Invalid verification code",user: user });
     }
   } catch (err) {
     res.status(500).send({ message: err.message || "Some error occurred while verifying the code" });
