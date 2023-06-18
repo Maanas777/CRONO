@@ -615,7 +615,7 @@ exports.add_coupon = async (req, res) => {
     })
     const coupon = await data.save()
 
-    res.redirect('add_coupon_page');
+    res.redirect('coupon_page');
   } catch (err) {
     console.log(err);
     res.status(500).send({

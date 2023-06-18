@@ -249,16 +249,14 @@ exports.HighToLow = async (req, res) => {
 
 exports.sendotp = async (req, res) => {
   const phone = req.body.phone
-  // console.log(phone);
+ let user=req.session.user
 
   const existingUser = await usersSchema.findOne({ phone: phone });
   if (!existingUser) {
-    return res.render("user/forgot_otp", { msg: 'Phone Number Not Found' });
+    return res.render("user/forgot_otp", { msg: 'Phone Number Not Found', user: user });
+
   }
   req.session.phone = phone;
-
-
-
 
   try {
 
