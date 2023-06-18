@@ -801,20 +801,34 @@ exports.Banner=async(req,res)=>{
   exports.SalesReport=async(req,res)=>{
     const admin=req.session.admin
     const filteredOrders=await orderSchema.find().populate("user").populate("items.product").populate("address")
-   console.log(filteredOrders,"popopo");
-    res.render("admin/sales_report",{admin,filteredOrders})
+    let fromDate = req.body.fromdate || 'YYYY-MM-DD'; // Use a default value for fromDate
+    let toDate = req.body.todate || 'YYYY-MM-DD'; // Use a default value for toDate
+
+    res.render("admin/sales_report",{admin,filteredOrders,fromDate,toDate})
   }
 
-  exports.FilterbyDates=async(req,res)=>{
-    const admin=req.session.admin
-    const FromDate=req.body.fromdate
-    console.log(FromDate);
-    const Todate=req.body.todate
-    console.log(Todate);
-    const filteredOrders=await orderSchema.find({createdAt:{$gte:FromDate,$lte:Todate}}).populate("user").populate("items.product").populate("address")
-   
-    res.render("admin/sales_report",{admin,filteredOrders})
-  }
+  exports.FilterbyDates = async (req, res) => {
+    const admin = req.session.admin;
+    const fromDate = req.body.fromdate || 'YYYY-MM-DD'; // Use a default value for fromDate
+    const toDate = req.body.todate || 'YYYY-MM-DD'; // Use a default value for toDate
+  console.log(fromDate,"9009099999090909");
+    try {
+      const filteredOrders = await orderSchema
+        .find({ createdAt: { $gte: fromDate, $lte: toDate } })
+        .populate("user")
+        .populate("items.product")
+        .populate("address");
+  
+      res.render("admin/sales_report", { admin, filteredOrders, fromDate,toDate });
+  
+    } catch (error) {
+      console.error(error);
+      // Handle the error and send an appropriate response to the client
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+  
+  
 
   exports.category_offer=async(req,res)=>{
     const admin=req.session.admin
