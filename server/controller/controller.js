@@ -231,8 +231,8 @@ exports.HighToLow = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.render("error", { message: "Error fetching products" });
-  }
+    res.render("error", { message: "Error fetching products"});
+}
 };
 
 
@@ -247,72 +247,74 @@ exports.HighToLow = async (req, res) => {
 
 //otp
 
-exports.sendotp = async (req, res) => {
-  const phone = req.body.phone
- let user=req.session.user
+// exports.sendotp = async (req, res) => {
+//   const phone = req.body.phone
+//  let user=req.session.user
 
-  const existingUser = await usersSchema.findOne({ phone: phone });
-  if (!existingUser) {
-    return res.render("user/forgot_otp", { msg: 'Phone Number Not Found', user: user });
+//   const existingUser = await usersSchema.findOne({ phone: phone });
+//   if (!existingUser) {
+//     return res.render("user/forgot_otp", { msg: 'Phone Number Not Found', user: user });
 
-  }
-  req.session.phone = phone;
+//   }
+//   req.session.phone = phone;
 
-  try {
+//   try {
 
-    const otpResponse = await client.verify.v2
-      .services(serviceId)
-      .verifications.create({
-        to: "+91" + phone,
-        channel: "sms"
-      })
-    res.render('user/fpverify_otp', { msg: "otp send successfully",user: user })
+//     const otpResponse = await client.verify.v2
+//       .services(serviceId)
+//       .verifications.create({
+//         to: "+91" + phone,
+//         channel: "sms"
+//       })
+//     res.render('user/fpverify_otp', { msg: "otp send successfully",user: user })
 
-  } catch (error) {
-    res.status(error?.status || 400)
-      .send(error?.message || "something went wrong")
-  }
-}
+//   } catch (error) {
+//     res.status(error?.status || 400)
+//       .send(error?.message || "something went wrong")
+//   }
+// }
 
-//verify otp
+// //verify otp
 
-exports.verifyotp = async (req, res) => {
-  let user=req.session.user
-  const verificationCode = req.body.otp
-  const phoneNumber = req.session.phone
-  // console.log(phoneNumber);
-  // console.log(verificationCode);
+// exports.verifyotp = async (req, res) => {
+//   let user=req.session.user
+//   const verificationCode = req.body.otp
+//   const phoneNumber = req.session.phone
+//   // console.log(phoneNumber);
+//   // console.log(verificationCode);
 
-  if (!phoneNumber) {
-    res.status(400).send({ message: "phone number is required" })
-    return
-  }
-  try {
-    // Verify the SMS code entered by the user
-    const verification_check = await client.verify.v2
-      .services(serviceId)
-      .verificationChecks.create
-      ({
-        to: '+91' + phoneNumber,
-        code: verificationCode
-      });
-    const user = await usersSchema.findOne({ phone: phoneNumber })
-    const username = user.name;
-    const userId = user._id;
+//   if (!phoneNumber) {
+//     res.status(400).send({ message: "phone number is required" })
+//     return
+//   }
+//   try {
+//     // Verify the SMS code entered by the user
+//     const verification_check = await client.verify.v2
+//       .services(serviceId)
+//       .verificationChecks.create
+//       ({
+//         to: '+91' + phoneNumber,
+//         code: verificationCode
+//       });
+//     const user = await usersSchema.findOne({ phone: phoneNumber })
+//     const username = user.name;
+//     const userId = user._id;
 
 
-    if (verification_check.status === 'approved') {
+//     if (verification_check.status === 'approved') {
 
-      res.render('user/forgot_password',{user: user});
-    } else {
-      // If the verification fails, return an error message
-      res.render('user/fpverify_otp', { msg: "Invalid verification code",user: user });
-    }
-  } catch (err) {
-    res.status(500).send({ message: err.message || "Some error occurred while verifying the code" });
-  }
+//       res.render('user/forgot_password',{user: user});
+//     } else {
+//       // If the verification fails, return an error message
+//       res.render('user/fpverify_otp', { msg: "Invalid verification code",user: user });
+//     }
+//   } catch (err) {
+//     res.status(500).send({ message: err.message || "Some error occurred while verifying the code" });
+//   }
 
-}
+// }
+
+
 
 exports.getCart = async (req, res) => {
   let user = req.session.user
