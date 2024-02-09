@@ -125,10 +125,10 @@ router.get('/view_order/:id',controller.view_order)
 router.get('/invoice/:id',controller.invoice)
 
 //forgot password otp
-router.get('/forgot_otp',controller.otp_page)
-router.post('/sendOtp',controller.sendotp)
-router.post('/verifyOtp',controller.verifyotp)
-router.post('/verify_password',controller.forgot_password)
+// router.get('/forgot_otp',controller.otp_page)
+// router.post('/sendOtp',controller.sendotp)
+// router.post('/verifyOtp',controller.verifyotp)
+// router.post('/verify_password',controller.forgot_password)
 
 
 //paypal
@@ -141,68 +141,6 @@ router.post('/delete_coupon',controller.deleteCoupon)
 //wallet
 router.get('/wallet_page',isLoggedIn,controller.Wallet)
 router.post('/wallet_buy',controller.wallet_buy)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
