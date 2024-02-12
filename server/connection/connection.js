@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
+let username = 'Maanas';
+let password = 'Maanas123';
+
+let uri = `mongodb+srv://${username}:${password}@cluster0.4le7hci.mongodb.net/?retryWrites=true&w=majority`;
+
 const connectDB = mongoose
-  .connect("mongodb://127.0.0.1:27017/watch")
+  .connect(uri)
   .then(() => {
     console.log("connected");
   })
