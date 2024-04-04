@@ -238,7 +238,7 @@ exports.HighToLow = async (req, res) => {
 
 
 
-otp
+// otp
 
 exports.sendotp = async (req, res) => {
   const phone = req.body.phone
@@ -269,43 +269,43 @@ exports.sendotp = async (req, res) => {
 
 //verify otp
 
-// exports.verifyotp = async (req, res) => {
-//   let user=req.session.user
-//   const verificationCode = req.body.otp
-//   const phoneNumber = req.session.phone
-//   // console.log(phoneNumber);
-//   // console.log(verificationCode);
+exports.verifyotp = async (req, res) => {
+  let user=req.session.user
+  const verificationCode = req.body.otp
+  const phoneNumber = req.session.phone
+  // console.log(phoneNumber);
+  // console.log(verificationCode);
 
-//   if (!phoneNumber) {
-//     res.status(400).send({ message: "phone number is required" })
-//     return
-//   }
-//   try {
-//     // Verify the SMS code entered by the user
-//     const verification_check = await client.verify.v2
-//       .services(serviceId)
-//       .verificationChecks.create
-//       ({
-//         to: '+91' + phoneNumber,
-//         code: verificationCode
-//       });
-//     const user = await usersSchema.findOne({ phone: phoneNumber })
-//     const username = user.name;
-//     const userId = user._id;
+  if (!phoneNumber) {
+    res.status(400).send({ message: "phone number is required" })
+    return
+  }
+  try {
+    // Verify the SMS code entered by the user
+    const verification_check = await client.verify.v2
+      .services(serviceId)
+      .verificationChecks.create
+      ({
+        to: '+91' + phoneNumber,
+        code: verificationCode
+      });
+    const user = await usersSchema.findOne({ phone: phoneNumber })
+    const username = user.name;
+    const userId = user._id;
 
 
-//     if (verification_check.status === 'approved') {
+    if (verification_check.status === 'approved') {
 
-//       res.render('user/forgot_password',{user: user});
-//     } else {
-//       // If the verification fails, return an error message
-//       res.render('user/fpverify_otp', { msg: "Invalid verification code",user: user });
-//     }
-//   } catch (err) {
-//     res.status(500).send({ message: err.message || "Some error occurred while verifying the code" });
-//   }
+      res.render('user/forgot_password',{user: user});
+    } else {
+      // If the verification fails, return an error message
+      res.render('user/fpverify_otp', { msg: "Invalid verification code",user: user });
+    }
+  } catch (err) {
+    res.status(500).send({ message: err.message || "Some error occurred while verifying the code" });
+  }
 
-// }
+}
 
 
 
