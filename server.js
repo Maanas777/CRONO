@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname,'public')))
 app.use(express.static("uploads"));
 
 
+
 app.use(session({
     
   secret:"my_secret_key",

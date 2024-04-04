@@ -10,10 +10,10 @@ const adressSchema = require('../model/adress')
 const orderSchema = require('../model/order')
 const couponSchema = require('../model/coupon')
 const walletSchema = require('../model/wallet')
-// const accountSid = process.env.Account_SID;
-// const authToken = process.env.Auth_Token;
+const accountSid = process.env.Account_SID;
+const authToken = process.env.Auth_Token;
 const serviceId = "VAa73f82e318c35b309ad7c8dbf41892bf"
-// const client = require("twilio")(accountSid, authToken);
+const client = require("twilio")(accountSid, authToken);
 const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
 // const { default: orders } = require("razorpay/dist/types/orders");
@@ -265,9 +265,14 @@ exports.sendotp = async (req, res) => {
 
   } catch (error) {
     res.status(error?.status || 400)
+    
       .send(error?.message || "something went wrong")
+      console.log(error)
   }
 }
+
+
+
 
 //verify otp
 
@@ -1080,6 +1085,7 @@ exports.deleteCoupon= async(req,res)=>{
 //forgot password
 
 exports.otp_page = (req, res) => {
+  console.log('get here')
   let user = req.session.user
   res.render('user/forgot_otp', { user })
 }
