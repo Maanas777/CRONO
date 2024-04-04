@@ -244,6 +244,8 @@ exports.sendotp = async (req, res) => {
   const phone = req.body.phone
  let user=req.session.user
 
+ console.log(user)
+
   const existingUser = await usersSchema.findOne({ phone: phone });
   if (!existingUser) {
     return res.render("user/forgot_otp", { msg: 'Phone Number Not Found', user: user });
